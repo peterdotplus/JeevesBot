@@ -299,7 +299,8 @@ export function deleteAppointment(index: number): {
  * Format appointment for display
  */
 export function formatAppointment(appointment: Appointment): string {
-  return `${appointment.date} ${appointment.time} - ${appointment.contactName} (${appointment.category})`;
+  const dayName = getDayName(appointment.date);
+  return `${dayName} ${appointment.date} ${appointment.time} - ${appointment.contactName} (${appointment.category})`;
 }
 
 /**
@@ -457,4 +458,22 @@ function parseDate(dateStr: string, timeStr: string): Date {
   const [day, month, year] = dateStr.split("-").map(Number);
   const [hours, minutes] = timeStr.split(":").map(Number);
   return new Date(year!, month! - 1, day!, hours!, minutes!);
+}
+
+/**
+ * Get day name from date string (DD-MM-YYYY)
+ */
+export function getDayName(dateStr: string): string {
+  const [day, month, year] = dateStr.split("-").map(Number);
+  const date = new Date(year!, month! - 1, day!);
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  return dayNames[date.getDay()]!;
 }

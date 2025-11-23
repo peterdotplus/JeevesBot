@@ -6,6 +6,7 @@ import {
   formatAppointment,
   formatAppointments,
   deleteAppointment,
+  getDayName,
   initializeCalendarData,
   Appointment,
 } from "../../src/services/calendarService";
@@ -431,7 +432,22 @@ describe("Calendar Service", () => {
       };
 
       const result = formatAppointment(appointment);
-      expect(result).toBe("21-11-2025 14:30 - Peter van der Meer (Ghostin 06)");
+      expect(result).toBe(
+        "Friday 21-11-2025 14:30 - Peter van der Meer (Ghostin 06)",
+      );
+    });
+  });
+
+  describe("getDayName", () => {
+    it("should return correct day names for different dates", () => {
+      // Test known dates
+      expect(getDayName("21-11-2025")).toBe("Friday");
+      expect(getDayName("22-11-2025")).toBe("Saturday");
+      expect(getDayName("23-11-2025")).toBe("Sunday");
+      expect(getDayName("24-11-2025")).toBe("Monday");
+      expect(getDayName("25-11-2025")).toBe("Tuesday");
+      expect(getDayName("26-11-2025")).toBe("Wednesday");
+      expect(getDayName("27-11-2025")).toBe("Thursday");
     });
   });
 
@@ -543,7 +559,7 @@ describe("Calendar Service", () => {
 
       const result = formatAppointments(appointments);
       expect(result).toBe(
-        "1. 21-11-2025 14:30 - Peter van der Meer (Ghostin 06)\n2. 22-11-2025 10:00 - John Doe (Meeting)",
+        "1. Friday 21-11-2025 14:30 - Peter van der Meer (Ghostin 06)\n2. Saturday 22-11-2025 10:00 - John Doe (Meeting)",
       );
     });
 

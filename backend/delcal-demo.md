@@ -13,9 +13,9 @@ Use `/viewcal` to see all your appointments with numbered listings:
 
 Current Date: 23-11-2025
 
-1. 21-11-2025 14:30 - Peter van der Meer (Ghostin 06)
-2. 22-11-2025 10:00 - John Doe (Meeting)
-3. 23-11-2025 09:00 - Jane Smith (Call)
+1. Friday 21-11-2025 14:30 - Peter van der Meer (Ghostin 06)
+2. Saturday 22-11-2025 10:00 - John Doe (Meeting)
+3. Sunday 23-11-2025 09:00 - Jane Smith (Call)
 ```
 
 ### 2. Delete an Appointment
@@ -44,8 +44,8 @@ Check `/viewcal` again to confirm:
 
 Current Date: 23-11-2025
 
-1. 21-11-2025 14:30 - Peter van der Meer (Ghostin 06)
-2. 23-11-2025 09:00 - Jane Smith (Call)
+1. Friday 21-11-2025 14:30 - Peter van der Meer (Ghostin 06)
+2. Sunday 23-11-2025 09:00 - Jane Smith (Call)
 ```
 
 ## Usage Examples
@@ -100,6 +100,7 @@ Invalid appointment number. Please use a number between 1 and 3
 ## Key Features
 
 - **Flexible Input**: Supports single-digit days and months (e.g., 1-12-2025, 1.12.2025, 1-1-25, 1.1.25, 1-1-2025, 1.1.2025)
+- **Day Name Display**: Shows day names (e.g., Friday 21-11-2025) for better readability
 - **Number Matching**: Uses the exact same numbering as `/viewcal` command
 - **Error Prevention**: Validates numbers and provides clear error messages
 - **Immediate Feedback**: Shows success confirmation with deleted appointment details and current date
