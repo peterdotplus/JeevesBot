@@ -13,10 +13,28 @@ const PORT = config.server.port;
 // Middleware
 app.use(
   cors({
-    origin: config.server.frontendUrl || "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://localhost:3000",
+      config.server.frontendUrl,
+    ].filter(Boolean),
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
   }),
 );
+
+// CORS logging middleware for debugging
+app.use((req, res, next) => {
+  if (req.headers.origin) {
+    console.log(
+      `🌐 CORS Request: ${req.method} ${req.path} from ${req.headers.origin}`,
+    );
+  }
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
