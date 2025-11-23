@@ -33,7 +33,15 @@ export function authenticate(
 
   // Extract and decode credentials
   const base64Credentials = authHeader.split(" ")[1];
-  const credentials = Buffer.from(base64Credentials, "base64").toString("ascii");
+  if (!base64Credentials) {
+    return res.status(401).json({
+      success: false,
+      error: "Invalid authentication format",
+    });
+  }
+  const credentials = Buffer.from(base64Credentials, "base64").toString(
+    "ascii",
+  );
   const [username, password] = credentials.split(":");
 
   if (!username || !password) {
@@ -84,6 +92,6 @@ export function requireRole(role: string) {
       });
     }
 
-    next();
+    return next();
   };
 }

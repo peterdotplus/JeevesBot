@@ -96,7 +96,7 @@ router.post("/", (req, res) => {
 
     const appointment = addAppointment(appointmentData);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         appointment,
@@ -104,7 +104,7 @@ router.post("/", (req, res) => {
     });
   } catch (error) {
     console.error("Error adding appointment:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "Failed to add appointment",
     });
@@ -146,7 +146,7 @@ router.delete("/:id", (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {
         deletedAppointment: result.deletedAppointment,
@@ -154,7 +154,7 @@ router.delete("/:id", (req, res) => {
     });
   } catch (error) {
     console.error("Error deleting appointment:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "Failed to delete appointment",
     });
@@ -185,7 +185,7 @@ router.post("/parse", (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {
         appointment: result.appointment,
@@ -193,7 +193,7 @@ router.post("/parse", (req, res) => {
     });
   } catch (error) {
     console.error("Error parsing appointment input:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "Failed to parse appointment input",
     });
