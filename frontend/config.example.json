@@ -1,0 +1,111 @@
+{
+  "name": "JeevesBot Frontend Configuration",
+  "description": "Example configuration file for the JeevesBot frontend application",
+  "version": "1.0.0",
+
+  "environment": {
+    "development": {
+      "BACKEND_URL": "http://localhost:3001",
+      "NEXT_PUBLIC_APP_NAME": "JeevesBot Calendar (Development)",
+      "NODE_ENV": "development"
+    },
+    "production": {
+      "BACKEND_URL": "https://your-backend-domain.com",
+      "NEXT_PUBLIC_APP_NAME": "JeevesBot Calendar",
+      "NODE_ENV": "production"
+    },
+    "staging": {
+      "BACKEND_URL": "https://staging.your-backend-domain.com",
+      "NEXT_PUBLIC_APP_NAME": "JeevesBot Calendar (Staging)",
+      "NODE_ENV": "production"
+    }
+  },
+
+  "authentication": {
+    "backendCredentials": {
+      "username": "admin",
+      "password": "password123",
+      "note": "These credentials are used for frontend-to-backend API communication and should match the backend config.json"
+    },
+    "frontendLogin": {
+      "enabled": true,
+      "sessionTimeout": 86400000,
+      "note": "Frontend login is for user experience, backend API uses basic auth with the credentials above"
+    }
+  },
+
+  "app": {
+    "name": "JeevesBot Calendar",
+    "description": "Digital assistant for business management with calendar functionality",
+    "version": "1.0.0",
+    "theme": {
+      "primaryColor": "#3b82f6",
+      "secondaryColor": "#6b7280",
+      "accentColor": "#10b981"
+    },
+    "features": {
+      "pwa": true,
+      "offlineSupport": false,
+      "pushNotifications": false,
+      "darkMode": false
+    }
+  },
+
+  "api": {
+    "endpoints": {
+      "appointments": {
+        "get": "/api/appointments",
+        "create": "/api/appointments",
+        "delete": "/api/appointments/[id]"
+      }
+    },
+    "timeout": 10000,
+    "retryAttempts": 3
+  },
+
+  "pwa": {
+    "manifest": {
+      "name": "JeevesBot Calendar",
+      "short_name": "JeevesBot",
+      "description": "Digital assistant for business management with calendar functionality",
+      "start_url": "/",
+      "display": "standalone",
+      "background_color": "#ffffff",
+      "theme_color": "#3b82f6",
+      "orientation": "portrait",
+      "scope": "/",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "categories": ["productivity", "business"],
+      "lang": "en"
+    }
+  },
+
+  "development": {
+    "hotReload": true,
+    "sourceMaps": true,
+    "analyzeBundle": false,
+    "port": 3000
+  },
+
+  "notes": [
+    "This is an example configuration file. Copy this to config.json and modify as needed.",
+    "For environment variables, create a .env.local file in the frontend root directory.",
+    "Required environment variables:",
+    "  - BACKEND_URL: URL of the backend API server",
+    "  - NEXT_PUBLIC_APP_NAME: Public name of the application",
+    "Example .env.local content:",
+    "  BACKEND_URL=http://localhost:3001",
+    "  NEXT_PUBLIC_APP_NAME=JeevesBot Calendar"
+  ]
+}

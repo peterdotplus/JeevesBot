@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-const BACKEND_AUTH =
-  "Basic " + Buffer.from("admin:password123").toString("base64");
-
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
+const BACKEND_USERNAME = process.env.BACKEND_USERNAME || "admin";
+const BACKEND_PASSWORD = process.env.BACKEND_PASSWORD || "password123";
+const BACKEND_AUTH =
+  "Basic " +
+  Buffer.from(`${BACKEND_USERNAME}:${BACKEND_PASSWORD}`).toString("base64");
 
 export async function DELETE(
   request: Request,

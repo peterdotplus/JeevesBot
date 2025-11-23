@@ -47,6 +47,13 @@ A modern, responsive Progressive Web App (PWA) frontend for the JeevesBot calend
    ```env
    BACKEND_URL=http://localhost:3001
    NEXT_PUBLIC_APP_NAME=JeevesBot Calendar
+   BACKEND_USERNAME=admin
+   BACKEND_PASSWORD=password123
+   ```
+   
+   Or copy from the example file:
+   ```bash
+   cp .env.example .env.local
    ```
 
 4. **Start the development server**
@@ -60,6 +67,54 @@ A modern, responsive Progressive Web App (PWA) frontend for the JeevesBot calend
 ```bash
 npm run build
 npm start
+```
+
+## Configuration
+
+### Environment Variables
+
+The frontend uses environment variables for configuration. Create a `.env.local` file in the frontend root directory:
+
+```env
+# Backend API URL
+BACKEND_URL=http://localhost:3001
+
+# Public application name (displayed in browser tab and PWA)
+NEXT_PUBLIC_APP_NAME=JeevesBot Calendar
+
+# Backend authentication credentials (must match backend config.json)
+BACKEND_USERNAME=admin
+BACKEND_PASSWORD=password123
+
+# Next.js configuration
+NODE_ENV=development
+```
+
+### Configuration Files
+
+- `config.example.json` - Example configuration structure
+- `.env.example` - Example environment variables
+- `manifest.json` - PWA configuration
+- `tailwind.config.js` - Styling configuration
+- `next.config.js` - Next.js configuration
+
+### Backend Authentication
+
+The frontend communicates with the backend using Basic Authentication. The credentials in `.env.local` must match those in the backend `config.json`:
+
+```json
+{
+  "authentication": {
+    "enabled": true,
+    "users": [
+      {
+        "username": "admin",
+        "password": "password123",
+        "role": "admin"
+      }
+    ]
+  }
+}
 ```
 
 ## Testing
@@ -117,6 +172,29 @@ The frontend communicates with the backend through Next.js API routes that proxy
 - `GET /api/appointments` - Fetch all appointments
 - `POST /api/appointments` - Create new appointment
 - `DELETE /api/appointments/[id]` - Delete appointment by ID
+
+### Authentication Flow
+
+1. **Frontend Login**: User logs in via the login page
+2. **Session Storage**: Authentication state stored in localStorage
+3. **API Communication**: Frontend API routes use Basic Auth with backend credentials
+4. **Backend Validation**: Backend validates credentials against config.json
+
+### Environment Setup
+
+For different environments, use different `.env.local` files:
+
+**Development:**
+```env
+BACKEND_URL=http://localhost:3001
+NEXT_PUBLIC_APP_NAME=JeevesBot Calendar (Dev)
+```
+
+**Production:**
+```env
+BACKEND_URL=https://your-backend-domain.com
+NEXT_PUBLIC_APP_NAME=JeevesBot Calendar
+```
 
 ## PWA Features
 
