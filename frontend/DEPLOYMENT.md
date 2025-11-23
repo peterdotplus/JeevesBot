@@ -60,12 +60,25 @@ The application automatically detects the environment based on:
 
 ## 🏗️ Build Process
 
-### Standard Build
+### Build Options
+
+#### Production Build (Recommended)
+```bash
+npm run build:prod
+```
+
+The production build:
+- Uses configuration from `config.json`
+- Automatically detects environment based on deployment URL
+- Generates static files in the `out/` folder
+- **Optimized for production** with better minification and smaller bundle sizes
+
+#### Standard Build
 ```bash
 npm run build
 ```
 
-The build process:
+The standard build:
 - Uses configuration from `config.json`
 - Automatically detects environment based on deployment URL
 - Generates static files in the `out/` folder
@@ -76,7 +89,7 @@ The build process:
 
 1. **Build the application:**
    ```bash
-   npm run build
+   npm run build:prod
    ```
 
 2. **Deploy static files:**
@@ -107,7 +120,7 @@ The build process:
 
 2. **Start with PM2:**
    ```bash
-   npm run build
+   npm run build:prod
    pm2 start npm --name "jeevesbot-frontend" -- start
    ```
 
@@ -126,7 +139,7 @@ The build process:
    COPY package*.json ./
    RUN npm ci --only=production
    COPY . .
-   RUN npm run build
+   RUN npm run build:prod
    EXPOSE 3000
    CMD ["npm", "start"]
    ```
@@ -189,7 +202,7 @@ The build process:
 
 3. **Static Export Issues**
    - Clear `.next` and `out` folders
-   - Run `npm run build` again
+   - Run `npm run build:prod` again
    - Check for client-side only code
 
 4. **Routing Problems**
@@ -223,7 +236,7 @@ For deployment issues:
 **Next Steps:**
 1. Update `config.json` with your actual production values
 2. Ensure backend `config.json` matches the frontend credentials
-3. Run `npm run build`
+3. Run `npm run build:prod`
 4. Deploy the `out/` folder to your web server
 5. Test authentication and API functionality in production
 
