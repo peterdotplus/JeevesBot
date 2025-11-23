@@ -5,6 +5,7 @@ import {
   addAppointment,
   getAllAppointments,
   getAppointmentsForNext7Days,
+  getAppointmentsForToday,
   formatAppointments,
   deleteAppointment,
   initializeCalendarData,
@@ -32,6 +33,7 @@ Available commands:
   *Time formats:* 10:30, 10.30
 • /viewcal - Display all appointments
 • /7days - Display appointments for today and next 6 days
+• /today - Display appointments for today only
 • /delcal - Delete an appointment
   Format: /delcal NUMBER
   Example: /delcal 3 (to delete the 3rd appointment shown in /viewcal)
@@ -199,6 +201,35 @@ bot.command("delcal", async (ctx) => {
     console.error("Error deleting appointment:", error);
     await ctx.reply(
       `❌ *Error deleting appointment*\n\n*Current Date: ${currentDate}*\n\nPlease try again.`,
+    );
+  }
+});
+
+// Handle /today command
+bot.command("today", async (ctx) => {
+  const currentDate = new Date().toLocaleDateString("nl-NL");
+
+  try {
+    const appointments = getAppointmentsForToday();
+
+    if (appointments.length === 0) {
+      await ctx.reply(
+        `📅 *No appointments for today*\n\n*Current Date: ${currentDate}*\n\nUse /addcal to add appointments for today.`,
+        { parse_mode: "Markdown" },
+      );
+      return;
+    }
+
+    const formattedAppointments = formatAppointments(appointments);
+
+    await ctx.reply(
+      `📅 *Today's Appointments*\n\n*Current Date: ${currentDate}*\n\n${formattedAppointments}`,
+      { parse_mode: "Markdown" },
+    );
+  } catch (error) {
+    console.error("Error viewing today's appointments:", error);
+    await ctx.reply(
+      `❌ *Error retrieving today's appointments*\n\n*Current Date: ${currentDate}*\n\nPlease try again.`,
     );
   }
 });

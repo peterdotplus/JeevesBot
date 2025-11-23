@@ -269,6 +269,22 @@ export function getAppointmentsForNext7Days(): Appointment[] {
 }
 
 /**
+ * Get appointments for today only
+ */
+export function getAppointmentsForToday(): Appointment[] {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const allAppointments = getAllAppointments();
+
+  return allAppointments.filter((appointment) => {
+    const appointmentDate = parseDate(appointment.date, "00:00");
+    return appointmentDate >= today && appointmentDate < tomorrow;
+  });
+}
+
+/**
  * Delete an appointment by its index in the displayed list
  */
 export function deleteAppointment(index: number): {

@@ -62,6 +62,7 @@ Current Date: 23-11-2025
 - `24-12-2025` - Standard two-digit format
 
 ### Valid Usage:
+- `/today` - Shows only today's appointments
 - `/delcal 1` - Deletes the first appointment
 - `/delcal 3` - Deletes the third appointment
 - `/delcal 5` - Deletes the fifth appointment (if it exists)
@@ -119,3 +120,4 @@ Invalid appointment number. Please use a number between 1 and 3
 - `/addcal` - Add new appointments
 - `/viewcal` - View all appointments with numbers
 - `/7days` - View appointments for the next week
+- `/today` - View appointments for today only

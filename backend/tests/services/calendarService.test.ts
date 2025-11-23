@@ -3,6 +3,7 @@ import {
   addAppointment,
   getAllAppointments,
   getAppointmentsForNext7Days,
+  getAppointmentsForToday,
   formatAppointment,
   formatAppointments,
   deleteAppointment,
@@ -417,6 +418,101 @@ describe("Calendar Service", () => {
 
       const result = getAppointmentsForNext7Days();
       expect(result).toHaveLength(0);
+    });
+  });
+
+  describe("getAppointmentsForToday", () => {
+    beforeEach(() => {
+      // Mock the current date to be 2025-11-20
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date(2025, 10, 20)); // Month is 0-indexed
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it("should return appointments for today only", () => {
+      // Add appointments for different dates
+      addAppointment({
+        date: "20-11-2025", // Today
+        time: "10:00",
+        contactName: "Today Morning",
+        category: "Meeting",
+      });
+
+      addAppointment({
+        date: "20-11-2025", // Today
+        time: "14:30",
+        contactName: "Today Afternoon",
+        category: "Call",
+      });
+
+      addAppointment({
+        date: "21-11-2025", // Tomorrow
+        time: "09:00",
+        contactName: "Tomorrow Appointment",
+        category: "Appointment",
+      });
+
+      addAppointment({
+        date: "19-11-2025", // Yesterday
+        time: "16:00",
+        contactName: "Yesterday Appointment",
+        category: "Meeting",
+      });
+
+      const result = getAppointmentsForToday();
+
+      expect(result).toHaveLength(2);
+      expect(result.map((a) => a.contactName)).toEqual([
+        "Today Morning",
+        "Today Afternoon",
+      ]);
+    });
+
+    it("should return empty array when no appointments for today", () => {
+      addAppointment({
+        date: "21-11-2025", // Tomorrow
+        time: "09:00",
+        contactName: "Tomorrow Appointment",
+        category: "Appointment",
+      });
+
+      addAppointment({
+        date: "19-11-2025", // Yesterday
+        time: "16:00",
+        contactName: "Yesterday Appointment",
+        category: "Meeting",
+      });
+
+      const result = getAppointmentsForToday();
+      expect(result).toHaveLength(0);
+    });
+
+    it("should handle time boundaries correctly", () => {
+      // Add appointments for today at different times
+      addAppointment({
+        date: "20-11-2025", // Today
+        time: "00:00",
+        contactName: "Midnight Appointment",
+        category: "Meeting",
+      });
+
+      addAppointment({
+        date: "20-11-2025", // Today
+        time: "23:59",
+        contactName: "Late Night Appointment",
+        category: "Call",
+      });
+
+      const result = getAppointmentsForToday();
+
+      expect(result).toHaveLength(2);
+      expect(result.map((a) => a.contactName)).toEqual([
+        "Midnight Appointment",
+        "Late Night Appointment",
+      ]);
     });
   });
 
