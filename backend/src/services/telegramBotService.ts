@@ -32,7 +32,7 @@ Available commands:
   *Date formats:* 24-12-2025, 24-12-25, 24.12.2025, 24.12.25, 241225, 24122025, 1-12-2025, 1.12.2025, 1-1-25, 1.1.25
   *Time formats:* 10:30, 10.30
 • /viewcal - Display all appointments
-• /7days - Display appointments for today and next 6 days
+• /7days or /week - Display appointments for today and next 6 days
 • /today - Display appointments for today only
 • /delcal - Delete an appointment
   Format: /delcal NUMBER
@@ -114,8 +114,10 @@ bot.command("viewcal", async (ctx) => {
   }
 });
 
-// Handle /7days command
-bot.command("7days", async (ctx) => {
+/**
+ * Handle 7-day appointments display (used by both /7days and /week commands)
+ */
+async function handle7DaysCommand(ctx: Context): Promise<void> {
   const currentDate = new Date().toLocaleDateString("nl-NL");
   const today = new Date();
   const sevenDaysLater = new Date(today);
@@ -146,7 +148,10 @@ bot.command("7days", async (ctx) => {
       `❌ *Error retrieving appointments*\n\n*Current Date: ${currentDate}*\n\nPlease try again.`,
     );
   }
-});
+}
+
+// Handle /7days command
+bot.command("7days", handle7DaysCommand);
 
 // Handle /delcal command
 bot.command("delcal", async (ctx) => {
@@ -204,6 +209,9 @@ bot.command("delcal", async (ctx) => {
     );
   }
 });
+
+// Handle /week command (alias for /7days)
+bot.command("week", handle7DaysCommand);
 
 // Handle /today command
 bot.command("today", async (ctx) => {

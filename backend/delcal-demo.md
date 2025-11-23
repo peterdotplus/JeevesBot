@@ -119,7 +119,7 @@ Invalid appointment number. Please use a number between 1 and 3
 - `/help` - Shows all available commands including `/delcal`
 - `/addcal` - Add new appointments
 - `/viewcal` - View all appointments with numbers
-- `/7days` - View appointments for the next week
+- `/7days` or `/week` - View appointments for the next week
 - `/today` - View appointments for today only
 - **Daily Reminder** - Automatic 9:00 AM notification with today's appointments
 
