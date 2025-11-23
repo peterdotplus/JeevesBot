@@ -15,19 +15,19 @@ jest.mock("@/utils/config", () => ({
     NODE_ENV: "development",
     authentication: {
       backendCredentials: {
-        username: "admin",
-        password: "password123",
+        username: "test-user",
+        password: "test-password",
         note: "Test credentials",
       },
     },
   })),
   getAuthCredentials: jest.fn(() => ({
-    username: "admin",
-    password: "password123",
+    username: "test-user",
+    password: "test-password",
     note: "Test credentials",
   })),
   buildAuthenticatedUrl: jest.fn((baseUrl: string, path: string) => {
-    return `${baseUrl}${path}?username=admin&password=password123`;
+    return `${baseUrl}${path}?username=test-user&password=test-password`;
   }),
 }));
 
@@ -238,7 +238,7 @@ describe("Home Page", () => {
     });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "http://localhost:3001/api/appointments?username=admin&password=password123",
+      "http://localhost:3001/api/appointments?username=test-user&password=test-password",
       {
         method: "POST",
         headers: {
@@ -283,7 +283,7 @@ describe("Home Page", () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        "http://localhost:3001/api/appointments/1?username=admin&password=password123",
+        "http://localhost:3001/api/appointments/1?username=test-user&password=test-password",
         {
           method: "DELETE",
         },

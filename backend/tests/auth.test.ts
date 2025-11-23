@@ -7,13 +7,13 @@ const mockConfig = {
   authentication: {
     users: [
       {
-        username: "admin",
-        password: "password123",
+        username: "testuser",
+        password: "testpass123",
         role: "admin",
       },
       {
-        username: "user",
-        password: "userpass",
+        username: "viewer",
+        password: "viewpass456",
         role: "user",
       },
     ],
@@ -46,12 +46,12 @@ describe("Authentication Middleware", () => {
     it("should authenticate with valid username and password in URL parameters", async () => {
       const response = await request(app)
         .get("/test")
-        .query({ username: "admin", password: "password123" });
+        .query({ username: "testuser", password: "testpass123" });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.user).toEqual({
-        username: "admin",
+        username: "testuser",
         role: "admin",
       });
     });
@@ -59,12 +59,12 @@ describe("Authentication Middleware", () => {
     it("should authenticate with different user credentials in URL parameters", async () => {
       const response = await request(app)
         .get("/test")
-        .query({ username: "user", password: "userpass" });
+        .query({ username: "viewer", password: "viewpass456" });
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.user).toEqual({
-        username: "user",
+        username: "viewer",
         role: "user",
       });
     });
@@ -72,7 +72,7 @@ describe("Authentication Middleware", () => {
     it("should reject authentication with invalid username in URL parameters", async () => {
       const response = await request(app)
         .get("/test")
-        .query({ username: "wronguser", password: "password123" });
+        .query({ username: "wronguser", password: "testpass123" });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -82,7 +82,7 @@ describe("Authentication Middleware", () => {
     it("should reject authentication with invalid password in URL parameters", async () => {
       const response = await request(app)
         .get("/test")
-        .query({ username: "admin", password: "wrongpassword" });
+        .query({ username: "testuser", password: "wrongpassword" });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -92,7 +92,7 @@ describe("Authentication Middleware", () => {
     it("should reject authentication with missing username in URL parameters", async () => {
       const response = await request(app)
         .get("/test")
-        .query({ password: "password123" });
+        .query({ password: "testpass123" });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -102,7 +102,7 @@ describe("Authentication Middleware", () => {
     it("should reject authentication with missing password in URL parameters", async () => {
       const response = await request(app)
         .get("/test")
-        .query({ username: "admin" });
+        .query({ username: "testuser" });
 
       expect(response.status).toBe(401);
       expect(response.body.success).toBe(false);
@@ -116,13 +116,13 @@ describe("Authentication Middleware", () => {
         .get("/test")
         .set(
           "Authorization",
-          "Basic " + Buffer.from("admin:password123").toString("base64"),
+          "Basic " + Buffer.from("testuser:testpass123").toString("base64"),
         );
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.user).toEqual({
-        username: "admin",
+        username: "testuser",
         role: "admin",
       });
     });
@@ -155,16 +155,16 @@ describe("Authentication Middleware", () => {
     it("should prioritize URL parameters over Basic Auth header", async () => {
       const response = await request(app)
         .get("/test")
-        .query({ username: "user", password: "userpass" })
+        .query({ username: "viewer", password: "viewpass456" })
         .set(
           "Authorization",
-          "Basic " + Buffer.from("admin:password123").toString("base64"),
+          "Basic " + Buffer.from("testuser:testpass123").toString("base64"),
         );
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(response.body.user).toEqual({
-        username: "user",
+        username: "viewer",
         role: "user",
       });
     });

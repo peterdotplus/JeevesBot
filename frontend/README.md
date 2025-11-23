@@ -61,8 +61,8 @@ A modern, responsive Progressive Web App (PWA) frontend for the JeevesBot calend
    ```env
    BACKEND_URL=http://localhost:3001
    NEXT_PUBLIC_APP_NAME=JeevesBot Calendar
-   BACKEND_USERNAME=admin
-   BACKEND_PASSWORD=password123
+   BACKEND_USERNAME=your-backend-username
+   BACKEND_PASSWORD=your-backend-password
    ```
    
    Or copy from the example file:
@@ -97,8 +97,8 @@ BACKEND_URL=http://localhost:3001
 NEXT_PUBLIC_APP_NAME=JeevesBot Calendar
 
 # Backend authentication credentials (must match backend config.json)
-BACKEND_USERNAME=admin
-BACKEND_PASSWORD=password123
+BACKEND_USERNAME=your-backend-username
+BACKEND_PASSWORD=your-backend-password
 
 # Next.js configuration
 NODE_ENV=development

@@ -24,8 +24,8 @@
 
   "authentication": {
     "backendCredentials": {
-      "username": "admin",
-      "password": "password123",
+      "username": "",
+      "password": "",
       "note": "These credentials are used for frontend-to-backend API communication and should match the backend config.json"
     },
     "frontendLogin": {

@@ -8,6 +8,15 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
+// Mock the config utility
+jest.mock("@/utils/config", () => ({
+  getAuthCredentials: jest.fn(() => ({
+    username: "testuser",
+    password: "testpass",
+    note: "Test credentials",
+  })),
+}));
+
 const mockPush = jest.fn();
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
 
@@ -32,11 +41,6 @@ describe("LoginPage", () => {
     expect(screen.getByLabelText("Username")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
-    expect(screen.getByText("Demo Credentials")).toBeInTheDocument();
-    expect(screen.getByText("Username:")).toBeInTheDocument();
-    expect(screen.getByText("admin")).toBeInTheDocument();
-    expect(screen.getByText("Password:")).toBeInTheDocument();
-    expect(screen.getByText("password123")).toBeInTheDocument();
   });
 
   it("shows error for invalid credentials", async () => {
@@ -67,8 +71,8 @@ describe("LoginPage", () => {
     const passwordInput = screen.getByLabelText("Password");
     const submitButton = screen.getByRole("button", { name: "Sign in" });
 
-    fireEvent.change(usernameInput, { target: { value: "admin" } });
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(usernameInput, { target: { value: "testuser" } });
+    fireEvent.change(passwordInput, { target: { value: "testpass" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -76,7 +80,7 @@ describe("LoginPage", () => {
     });
 
     expect(localStorage.getItem("authenticated")).toBe("true");
-    expect(localStorage.getItem("username")).toBe("admin");
+    expect(localStorage.getItem("username")).toBe("testuser");
   });
 
   it("shows loading state during authentication", async () => {
@@ -86,8 +90,8 @@ describe("LoginPage", () => {
     const passwordInput = screen.getByLabelText("Password");
     const submitButton = screen.getByRole("button", { name: "Sign in" });
 
-    fireEvent.change(usernameInput, { target: { value: "admin" } });
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(usernameInput, { target: { value: "testuser" } });
+    fireEvent.change(passwordInput, { target: { value: "testpass" } });
     fireEvent.click(submitButton);
 
     expect(screen.getByText(/Signing in/)).toBeInTheDocument();
@@ -117,7 +121,7 @@ describe("LoginPage", () => {
     });
 
     // Start typing again
-    fireEvent.change(usernameInput, { target: { value: "admin" } });
+    fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
     await waitFor(() => {
       expect(
@@ -134,7 +138,7 @@ describe("LoginPage", () => {
     const submitButton = screen.getByRole("button", { name: "Sign in" });
 
     // Try with empty username
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(passwordInput, { target: { value: "testpass" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -144,7 +148,7 @@ describe("LoginPage", () => {
     });
 
     // Clear and try with empty password
-    fireEvent.change(usernameInput, { target: { value: "admin" } });
+    fireEvent.change(usernameInput, { target: { value: "testuser" } });
     fireEvent.change(passwordInput, { target: { value: "" } });
     fireEvent.click(submitButton);
 
@@ -153,20 +157,5 @@ describe("LoginPage", () => {
         screen.getByText(/Invalid username or password/),
       ).toBeInTheDocument();
     });
-  });
-
-  it("displays demo credentials for testing", () => {
-    render(<LoginPage />);
-
-    expect(screen.getByText("Username:")).toBeInTheDocument();
-    expect(screen.getByText("admin")).toBeInTheDocument();
-    expect(screen.getByText("Password:")).toBeInTheDocument();
-    expect(screen.getByText("password123")).toBeInTheDocument();
-
-    const usernameCode = screen.getByText("admin");
-    const passwordCode = screen.getByText("password123");
-
-    expect(usernameCode).toHaveClass("font-mono");
-    expect(passwordCode).toHaveClass("font-mono");
   });
 });
