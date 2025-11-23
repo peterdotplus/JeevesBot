@@ -6,6 +6,7 @@ import {
   getAllAppointments,
   getAppointmentsForNext7Days,
   formatAppointments,
+  deleteAppointment,
   initializeCalendarData,
 } from "./calendarService";
 
@@ -31,6 +32,9 @@ Available commands:
   *Time formats:* 10:30, 10.30
 • /viewcal - Display all appointments
 • /7days - Display appointments for today and next 6 days
+• /delcal - Delete an appointment
+  Format: /delcal NUMBER
+  Example: /delcal 3 (to delete the 3rd appointment shown in /viewcal)
 
 *Note:* Use dots (.) as separators between date, time, contact name, and category.`;
 
@@ -138,6 +142,55 @@ bot.command("7days", async (ctx) => {
     console.error("Error viewing 7-day appointments:", error);
     await ctx.reply(
       `❌ *Error retrieving appointments*\n\n*Current Date: ${currentDate}*\n\nPlease try again.`,
+    );
+  }
+});
+
+// Handle /delcal command
+bot.command("delcal", async (ctx) => {
+  const currentDate = new Date().toLocaleDateString("nl-NL");
+  const messageText = ctx.message.text;
+
+  // Extract the appointment number after the command
+  const appointmentNumber = messageText.replace(/^\/delcal\s+/, "").trim();
+
+  if (!appointmentNumber) {
+    await ctx.reply(
+      `❌ *Usage:* /delcal NUMBER\n\n*Current Date: ${currentDate}*\n\nExample: /delcal 3 (to delete the 3rd appointment shown in /viewcal)\n\nUse /viewcal first to see the appointment numbers.`,
+      { parse_mode: "Markdown" },
+    );
+    return;
+  }
+
+  // Parse the appointment number
+  const number = parseInt(appointmentNumber);
+  if (isNaN(number)) {
+    await ctx.reply(
+      `❌ *Invalid number!*\n\n*Current Date: ${currentDate}*\n\nPlease provide a valid number. Example: /delcal 3`,
+      { parse_mode: "Markdown" },
+    );
+    return;
+  }
+
+  try {
+    const { success, error } = deleteAppointment(number);
+
+    if (!success) {
+      await ctx.reply(
+        `❌ *Error deleting appointment*\n\n*Current Date: ${currentDate}*\n\n${error}`,
+        { parse_mode: "Markdown" },
+      );
+      return;
+    }
+
+    await ctx.reply(
+      `🗑️ *Appointment deleted successfully!*\n\n*Current Date: ${currentDate}*\n\nAppointment #${number} has been removed from your calendar.`,
+      { parse_mode: "Markdown" },
+    );
+  } catch (error) {
+    console.error("Error deleting appointment:", error);
+    await ctx.reply(
+      `❌ *Error deleting appointment*\n\n*Current Date: ${currentDate}*\n\nPlease try again.`,
     );
   }
 });

@@ -269,6 +269,31 @@ export function getAppointmentsForNext7Days(): Appointment[] {
 }
 
 /**
+ * Delete an appointment by its index in the displayed list
+ */
+export function deleteAppointment(index: number): {
+  success: boolean;
+  error?: string;
+} {
+  const data = loadCalendarData();
+
+  if (index < 1 || index > data.appointments.length) {
+    return {
+      success: false,
+      error: `Invalid appointment number. Please use a number between 1 and ${data.appointments.length}`,
+    };
+  }
+
+  // Remove the appointment at the specified index (1-based in display, 0-based in array)
+  const deletedAppointment = data.appointments.splice(index - 1, 1)[0];
+  saveCalendarData(data);
+
+  return {
+    success: true,
+  };
+}
+
+/**
  * Format appointment for display
  */
 export function formatAppointment(appointment: Appointment): string {

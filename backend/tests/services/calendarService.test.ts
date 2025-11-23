@@ -5,6 +5,7 @@ import {
   getAppointmentsForNext7Days,
   formatAppointment,
   formatAppointments,
+  deleteAppointment,
   initializeCalendarData,
   Appointment,
 } from "../../src/services/calendarService";
@@ -360,6 +361,85 @@ describe("Calendar Service", () => {
 
       const result = formatAppointment(appointment);
       expect(result).toBe("21-11-2025 14:30 - Peter van der Meer (Ghostin 06)");
+    });
+  });
+
+  describe("deleteAppointment", () => {
+    beforeEach(() => {
+      // Add some test appointments
+      addAppointment({
+        date: "21-11-2025",
+        time: "14:30",
+        contactName: "Peter van der Meer",
+        category: "Ghostin 06",
+      });
+
+      addAppointment({
+        date: "22-11-2025",
+        time: "10:00",
+        contactName: "John Doe",
+        category: "Meeting",
+      });
+
+      addAppointment({
+        date: "23-11-2025",
+        time: "09:00",
+        contactName: "Jane Smith",
+        category: "Call",
+      });
+    });
+
+    it("should delete appointment by valid index", () => {
+      const initialAppointments = getAllAppointments();
+      expect(initialAppointments).toHaveLength(3);
+
+      const result = deleteAppointment(2); // Delete the second appointment
+      expect(result.success).toBe(true);
+
+      const remainingAppointments = getAllAppointments();
+      expect(remainingAppointments).toHaveLength(2);
+      expect(remainingAppointments[0]?.contactName).toBe("Peter van der Meer");
+      expect(remainingAppointments[1]?.contactName).toBe("Jane Smith");
+    });
+
+    it("should return error for index less than 1", () => {
+      const result = deleteAppointment(0);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Invalid appointment number");
+    });
+
+    it("should return error for index greater than appointments length", () => {
+      const result = deleteAppointment(5);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Invalid appointment number");
+    });
+
+    it("should handle deleting the first appointment", () => {
+      const result = deleteAppointment(1);
+      expect(result.success).toBe(true);
+
+      const remainingAppointments = getAllAppointments();
+      expect(remainingAppointments).toHaveLength(2);
+      expect(remainingAppointments[0]?.contactName).toBe("John Doe");
+    });
+
+    it("should handle deleting the last appointment", () => {
+      const result = deleteAppointment(3);
+      expect(result.success).toBe(true);
+
+      const remainingAppointments = getAllAppointments();
+      expect(remainingAppointments).toHaveLength(2);
+      expect(remainingAppointments[1]?.contactName).toBe("John Doe");
+    });
+
+    it("should return error when no appointments exist", () => {
+      // Clear all appointments
+      const calendarService = require("../../src/services/calendarService");
+      calendarService.clearInMemoryData();
+
+      const result = deleteAppointment(1);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("Invalid appointment number");
     });
   });
 
