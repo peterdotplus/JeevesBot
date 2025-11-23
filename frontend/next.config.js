@@ -2,29 +2,19 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-
-  // PWA configuration
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
-          },
-        ],
-      },
-    ];
+  output: "export",
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
   },
+  // Disable SWC minification to avoid React import issues
+  experimental: {
+    forceSwcTransforms: false,
+  },
+  // Ensure static export works properly
+  distDir: "out",
+  // Skip API routes for static export
+  skipTrailingSlashRedirect: true,
 };
 
 module.exports = nextConfig;

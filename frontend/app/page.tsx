@@ -1,50 +1,52 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-
 import { useState, useEffect } from "react";
 import Calendar from "@/components/Calendar";
 import AddAppointmentForm from "@/components/AddAppointmentForm";
 import { Appointment } from "@/types/calendar";
 
 export default function Home() {
-  const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-
-  // Check authentication on component mount
-  React.useEffect(() => {
-    const isAuthenticated = localStorage.getItem("authenticated");
-    if (!isAuthenticated) {
-      router.push("/login");
-    }
-  }, [router]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Show loading while checking authentication
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  React.useEffect(() => {
-    const isAuthenticated = localStorage.getItem("authenticated");
-    if (isAuthenticated) {
-      setIsCheckingAuth(false);
+  // Check authentication on component mount
+  useEffect(() => {
+    const authStatus = localStorage.getItem("authenticated");
+    if (authStatus) {
+      setIsAuthenticated(true);
       fetchAppointments();
     } else {
-      router.push("/login");
+      // For static export, redirect using window.location
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
     }
-  }, [router]);
+  }, []);
 
   const fetchAppointments = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/appointments");
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+      const backendUsername =
+        process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
+      const backendPassword =
+        process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+      const response = await fetch(`${backendUrl}/api/appointments`, {
+        headers: {
+          Authorization:
+            "Basic " + btoa(`${backendUsername}:${backendPassword}`),
+        },
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch appointments");
       }
       const data = await response.json();
-      setAppointments(data.appointments || []);
+      setAppointments(data.data?.appointments || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -59,10 +61,18 @@ export default function Home() {
     appointmentData: Omit<Appointment, "id" | "createdAt">,
   ) => {
     try {
-      const response = await fetch("/api/appointments", {
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+      const backendUsername =
+        process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
+      const backendPassword =
+        process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+      const response = await fetch(`${backendUrl}/api/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization:
+            "Basic " + btoa(`${backendUsername}:${backendPassword}`),
         },
         body: JSON.stringify(appointmentData),
       });
@@ -83,8 +93,18 @@ export default function Home() {
 
   const handleDeleteAppointment = async (id: string) => {
     try {
-      const response = await fetch(`/api/appointments/${id}`, {
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+      const backendUsername =
+        process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
+      const backendPassword =
+        process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+      const response = await fetch(`${backendUrl}/api/appointments/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization:
+            "Basic " + btoa(`${backendUsername}:${backendPassword}`),
+        },
       });
 
       if (!response.ok) {
@@ -99,7 +119,7 @@ export default function Home() {
     }
   };
 
-  if (isCheckingAuth || isLoading) {
+  if (!isAuthenticated || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -129,7 +149,9 @@ export default function Home() {
                 onClick={() => {
                   localStorage.removeItem("authenticated");
                   localStorage.removeItem("username");
-                  router.push("/login");
+                  if (typeof window !== "undefined") {
+                    window.location.href = "/login";
+                  }
                 }}
                 className="btn-secondary flex items-center gap-2"
               >
