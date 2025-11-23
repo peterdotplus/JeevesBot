@@ -5,9 +5,16 @@
   "main": "backend/dist/index.js",
   "scripts": {
     "dev": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:frontend\"",
     "build": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build && npm run build:frontend",
     "start": "cd backend && npm start",
-    "test": "cd backend && npm test"
+    "start:frontend": "cd frontend && npm start",
+    "test": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "test:all": "npm run test && npm run test:frontend"
   },
   "keywords": [
     "digital-assistant",
@@ -19,5 +26,8 @@
   "license": "MIT",
   "dependencies": {
     "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
   }
 }

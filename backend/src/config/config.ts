@@ -10,6 +10,15 @@ export interface Config {
     port: number;
     environment: string;
     webhookBaseUrl?: string;
+    frontendUrl?: string;
+  };
+  authentication?: {
+    enabled: boolean;
+    users: Array<{
+      username: string;
+      password: string;
+      role: string;
+    }>;
   };
 }
 
@@ -90,7 +99,12 @@ export function loadConfig(): Config {
         process.env.NODE_ENV || fileConfig.server?.environment || "development",
       webhookBaseUrl:
         process.env.WEBHOOK_BASE_URL || fileConfig.server?.webhookBaseUrl,
+      frontendUrl:
+        process.env.FRONTEND_URL ||
+        fileConfig.server?.frontendUrl ||
+        "http://localhost:3000",
     },
+    authentication: fileConfig.authentication,
   };
 
   // Validate required configuration

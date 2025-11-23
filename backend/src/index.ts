@@ -1,18 +1,31 @@
 import express from "express";
+import cors from "cors";
 import { config } from "./config/config";
 import telegramRoutes from "./routes/telegram";
+import calendarRoutes from "./routes/calendar";
 import { initializeTelegramBot } from "./services/telegramBotService";
 import { initializeConversationMemory } from "./services/conversationMemoryService";
+import { authenticate } from "./middleware/auth";
 
 const app = express();
 const PORT = config.server.port;
 
 // Middleware
+app.use(
+  cors({
+    origin: config.server.frontendUrl || "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Store config in app locals for middleware access
+app.locals.config = config;
+
 // Routes
 app.use("/telegram", telegramRoutes);
+app.use("/api/appointments", authenticate, calendarRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
