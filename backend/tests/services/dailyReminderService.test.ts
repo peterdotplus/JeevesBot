@@ -1,21 +1,15 @@
-import {
-  sendDailyReminder,
-  triggerDailyReminder,
-  initializeDailyReminder,
-} from "../../src/services/dailyReminderService";
+import { sendDailyReminder } from "../../src/services/dailyReminderService";
 import { telegramBot } from "../../src/services/telegramBotService";
 import {
   getAppointmentsForToday,
   formatAppointments,
 } from "../../src/services/calendarService";
 import { config } from "../../src/config/config";
-import cron from "node-cron";
 
 // Mock dependencies
 jest.mock("../../src/services/telegramBotService");
 jest.mock("../../src/services/calendarService");
 jest.mock("../../src/config/config");
-jest.mock("node-cron");
 
 const mockedTelegramBot = telegramBot as jest.Mocked<typeof telegramBot>;
 const mockedGetAppointmentsForToday =
@@ -26,7 +20,6 @@ const mockedFormatAppointments = formatAppointments as jest.MockedFunction<
   typeof formatAppointments
 >;
 const mockedConfig = config as jest.Mocked<typeof config>;
-const mockedCron = cron as jest.Mocked<typeof cron>;
 
 describe("Daily Reminder Service", () => {
   beforeEach(() => {
@@ -99,66 +92,6 @@ describe("Daily Reminder Service", () => {
       );
 
       consoleErrorSpy.mockRestore();
-    });
-  });
-
-  describe("triggerDailyReminder", () => {
-    it("should call sendDailyReminder", async () => {
-      const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
-
-      await triggerDailyReminder();
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "🔔 Manually triggering daily reminder",
-      );
-
-      consoleLogSpy.mockRestore();
-    });
-  });
-
-  describe("initializeDailyReminder", () => {
-    it("should initialize cron job in production environment", () => {
-      mockedConfig.server.environment = "production";
-      mockedConfig.telegram.chatId = "123456789";
-
-      initializeDailyReminder();
-
-      expect(mockedCron.schedule).toHaveBeenCalledWith(
-        "0 9 * * *",
-        expect.any(Function),
-        { timezone: "Europe/Amsterdam" },
-      );
-    });
-
-    it("should not initialize cron job in non-production environment", () => {
-      const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
-
-      mockedConfig.server.environment = "development";
-
-      initializeDailyReminder();
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "⏰ Daily reminder cron job disabled in non-production environment",
-      );
-      expect(mockedCron.schedule).not.toHaveBeenCalled();
-
-      consoleLogSpy.mockRestore();
-    });
-
-    it("should not initialize cron job when no chat ID is configured", () => {
-      const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
-
-      mockedConfig.server.environment = "production";
-      mockedConfig.telegram.chatId = "";
-
-      initializeDailyReminder();
-
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        "⏰ Daily reminder cron job disabled - no chat ID configured",
-      );
-      expect(mockedCron.schedule).not.toHaveBeenCalled();
-
-      consoleLogSpy.mockRestore();
     });
   });
 });

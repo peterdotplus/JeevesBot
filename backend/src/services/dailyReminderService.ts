@@ -1,7 +1,6 @@
 import { telegramBot } from "./telegramBotService";
 import { getAppointmentsForToday, formatAppointments } from "./calendarService";
 import { config } from "../config/config";
-import cron from "node-cron";
 
 /**
  * Send daily reminder with today's appointments
@@ -32,40 +31,4 @@ export async function sendDailyReminder(): Promise<void> {
   } catch (error) {
     console.error("❌ Error sending daily reminder:", error);
   }
-}
-
-/**
- * Initialize daily reminder cron job
- * Runs every day at 9:00 AM
- */
-export function initializeDailyReminder(): void {
-  if (config.server.environment !== "production") {
-    console.log("⏰ Daily reminder cron job disabled in non-production environment");
-    return;
-  }
-
-  if (!config.telegram.chatId) {
-    console.log("⏰ Daily reminder cron job disabled - no chat ID configured");
-    return;
-  }
-
-  // Schedule cron job to run at 9:00 AM every day
-  // Cron format: minute hour day month dayOfWeek
-  // 0 9 * * * = At 09:00 every day
-  cron.schedule("0 9 * * *", async () => {
-    console.log("⏰ Daily reminder cron job triggered at 9:00 AM");
-    await sendDailyReminder();
-  }, {
-    timezone: "Europe/Amsterdam" // Use Netherlands timezone
-  });
-
-  console.log("✅ Daily reminder cron job initialized (9:00 AM daily)");
-}
-
-/**
- * Manually trigger daily reminder (for testing)
- */
-export async function triggerDailyReminder(): Promise<void> {
-  console.log("🔔 Manually triggering daily reminder");
-  await sendDailyReminder();
 }

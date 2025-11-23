@@ -3,7 +3,6 @@ import { config } from "./config/config";
 import telegramRoutes from "./routes/telegram";
 import { initializeTelegramBot } from "./services/telegramBotService";
 import { initializeConversationMemory } from "./services/conversationMemoryService";
-import { initializeDailyReminder } from "./services/dailyReminderService";
 
 const app = express();
 const PORT = config.server.port;
@@ -71,13 +70,6 @@ app.listen(PORT, async () => {
     await initializeTelegramBot();
   } catch (error) {
     console.error("❌ Failed to initialize Telegram bot:", error);
-  }
-
-  // Initialize daily reminder cron job
-  try {
-    initializeDailyReminder();
-  } catch (error) {
-    console.error("❌ Failed to initialize daily reminder:", error);
   }
 });
 
