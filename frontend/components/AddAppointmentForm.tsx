@@ -1,6 +1,15 @@
 "use client";
 
 import React from "react";
+import {
+  parseDateInput,
+  parseTimeInput,
+  isValidDate,
+  isValidTime,
+  getTodayDate,
+  getSupportedDateFormats,
+  getSupportedTimeFormats,
+} from "@/utils/dateTime";
 
 import { useState } from "react";
 import { Appointment } from "@/types/calendar";
@@ -25,32 +34,31 @@ export default function AddAppointmentForm({
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    // Date validation (DD-MM-YYYY format)
+    // Date validation (flexible formats)
     if (!formData.date) {
       newErrors.date = "Date is required";
-    } else if (!/^\d{2}-\d{2}-\d{4}$/.test(formData.date)) {
-      newErrors.date = "Date must be in DD-MM-YYYY format";
     } else {
-      const [day, month, year] = formData.date.split("-").map(Number);
-      const date = new Date(year, month - 1, day);
-      if (
-        date.getDate() !== day ||
-        date.getMonth() !== month - 1 ||
-        date.getFullYear() !== year
+      const parsedDate = parseDateInput(formData.date);
+      if (!parsedDate) {
+        newErrors.date =
+          "Invalid date format. Supported: DD-MM-YYYY, DD-MM-YY, DD.MM.YYYY, DD.MM.YY, DDMMYY, DDMMYYYY";
+      } else if (
+        !isValidDate(parsedDate.day, parsedDate.month, parsedDate.year)
       ) {
-        newErrors.date = "Invalid date";
+        newErrors.date = "Invalid date (does not exist in calendar)";
       }
     }
 
-    // Time validation (HH:MM format)
+    // Time validation (flexible formats)
     if (!formData.time) {
       newErrors.time = "Time is required";
-    } else if (!/^\d{2}:\d{2}$/.test(formData.time)) {
-      newErrors.time = "Time must be in HH:MM format";
     } else {
-      const [hours, minutes] = formData.time.split(":").map(Number);
-      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-        newErrors.time = "Invalid time";
+      const parsedTime = parseTimeInput(formData.time);
+      if (!parsedTime) {
+        newErrors.time = "Invalid time format. Supported: HH:MM, HH.MM";
+      } else if (!isValidTime(parsedTime.hours, parsedTime.minutes)) {
+        newErrors.time =
+          "Invalid time. Hours must be 00-23, minutes must be 00-59";
       }
     }
 
@@ -70,12 +78,17 @@ export default function AddAppointmentForm({
     e.preventDefault();
 
     if (validateForm()) {
-      const trimmedData = {
-        ...formData,
+      // Parse and normalize date and time formats
+      const parsedDate = parseDateInput(formData.date);
+      const parsedTime = parseTimeInput(formData.time);
+
+      const normalizedData = {
+        date: parsedDate?.formatted || formData.date,
+        time: parsedTime?.formatted || formData.time,
         contactName: formData.contactName.trim(),
         category: formData.category.trim(),
       };
-      onSubmit(trimmedData);
+      onSubmit(normalizedData);
     }
   };
 
@@ -95,12 +108,8 @@ export default function AddAppointmentForm({
     }
   };
 
-  const getTodayDate = () => {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    return `${day}-${month}-${year}`;
+  const getTodayDateFormatted = () => {
+    return getTodayDate();
   };
 
   return (
@@ -135,7 +144,7 @@ export default function AddAppointmentForm({
             htmlFor="date"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Date (DD-MM-YYYY)
+            Date (Multiple formats supported)
           </label>
           <input
             type="text"
@@ -143,13 +152,18 @@ export default function AddAppointmentForm({
             name="date"
             value={formData.date}
             onChange={handleChange}
-            placeholder="e.g., 21-11-2025"
+            placeholder="e.g., 21-11-2025, 21.11.2025, 211125"
             className={`input-field ${errors.date ? "border-red-300 focus:ring-red-500" : ""}`}
           />
           {errors.date && (
             <p className="mt-1 text-sm text-red-600">{errors.date}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">Today: {getTodayDate()}</p>
+          <p className="mt-1 text-xs text-gray-500">
+            Today: {getTodayDateFormatted()}
+          </p>
+          <p className="mt-1 text-xs text-gray-500">
+            Supported formats: {getSupportedDateFormats().join(", ")}
+          </p>
         </div>
 
         <div>
@@ -157,7 +171,7 @@ export default function AddAppointmentForm({
             htmlFor="time"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Time (HH:MM)
+            Time (Multiple formats supported)
           </label>
           <input
             type="text"
@@ -165,12 +179,15 @@ export default function AddAppointmentForm({
             name="time"
             value={formData.time}
             onChange={handleChange}
-            placeholder="e.g., 14:30"
+            placeholder="e.g., 14:30, 14.30"
             className={`input-field ${errors.time ? "border-red-300 focus:ring-red-500" : ""}`}
           />
           {errors.time && (
             <p className="mt-1 text-sm text-red-600">{errors.time}</p>
           )}
+          <p className="mt-1 text-xs text-gray-500">
+            Supported formats: {getSupportedTimeFormats().join(", ")}
+          </p>
         </div>
 
         <div>
