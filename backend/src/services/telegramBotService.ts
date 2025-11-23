@@ -28,7 +28,7 @@ Available commands:
 • /addcal - Add an appointment to the calendar
   Format: /addcal DATE. TIME. Contact Name. Category
   Example: /addcal 21-11-2025. 14:30. Peter van der Meer. Ghostin 06
-  *Date formats:* 24-12-2025, 24-12-25, 24.12.2025, 24.12.25, 241225, 24122025
+  *Date formats:* 24-12-2025, 24-12-25, 24.12.2025, 24.12.25, 241225, 24122025, 1-12-2025, 1.12.2025, 1-1-25, 1.1.25
   *Time formats:* 10:30, 10.30
 • /viewcal - Display all appointments
 • /7days - Display appointments for today and next 6 days

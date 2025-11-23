@@ -126,6 +126,77 @@ describe("Calendar Service", () => {
       });
     });
 
+    it("should support single-digit days and months", () => {
+      // Test all single-digit date format combinations
+      const testCases = [
+        // Dash formats with 4-digit years
+        {
+          input: "1-12-2025. 10:30. Test Contact. Test Category",
+          expected: "01-12-2025",
+        },
+        {
+          input: "24-1-2025. 10:30. Test Contact. Test Category",
+          expected: "24-01-2025",
+        },
+        {
+          input: "1-1-2025. 10:30. Test Contact. Test Category",
+          expected: "01-01-2025",
+        },
+
+        // Dash formats with 2-digit years
+        {
+          input: "1-12-25. 10:30. Test Contact. Test Category",
+          expected: "01-12-2025",
+        },
+        {
+          input: "24-1-25. 10:30. Test Contact. Test Category",
+          expected: "24-01-2025",
+        },
+        {
+          input: "1-1-25. 10:30. Test Contact. Test Category",
+          expected: "01-01-2025",
+        },
+
+        // Dot formats with 4-digit years
+        {
+          input: "1.12.2025. 10:30. Test Contact. Test Category",
+          expected: "01-12-2025",
+        },
+        {
+          input: "24.1.2025. 10:30. Test Contact. Test Category",
+          expected: "24-01-2025",
+        },
+        {
+          input: "1.1.2025. 10:30. Test Contact. Test Category",
+          expected: "01-01-2025",
+        },
+
+        // Dot formats with 2-digit years
+        {
+          input: "1.12.25. 10:30. Test Contact. Test Category",
+          expected: "01-12-2025",
+        },
+        {
+          input: "24.1.25. 10:30. Test Contact. Test Category",
+          expected: "24-01-2025",
+        },
+        {
+          input: "1.1.25. 10:30. Test Contact. Test Category",
+          expected: "01-01-2025",
+        },
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        const result = parseAppointmentInput(input);
+        expect(result.appointment).toEqual({
+          date: expected,
+          time: "10:30",
+          contactName: "Test Contact",
+          category: "Test Category",
+        });
+      });
+    });
+
     it("should support multiple time formats", () => {
       // Test HH:MM
       let result = parseAppointmentInput(

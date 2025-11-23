@@ -323,8 +323,8 @@ export function formatAppointments(appointments: Appointment[]): string {
 function parseDateInput(
   dateStr: string,
 ): { day: number; month: number; year: number; formatted: string } | null {
-  // Format 1: DD-MM-YYYY (24-12-2025)
-  let match = dateStr.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  // Format 1: DD-MM-YYYY (24-12-2025) or D-M-YYYY (1-12-2025)
+  let match = dateStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
 
   if (match) {
     const day = parseInt(match[1]!);
@@ -334,21 +334,26 @@ function parseDateInput(
       day,
       month,
       year,
-      formatted: `${match[1]!}-${match[2]!}-${match[3]!}`,
+      formatted: `${match[1]!.padStart(2, "0")}-${match[2]!.padStart(2, "0")}-${match[3]!}`,
     };
   }
 
-  // Format 2: DD-MM-YY (24-12-25)
-  match = dateStr.match(/^(\d{2})-(\d{2})-(\d{2})$/);
+  // Format 2: DD-MM-YY (24-12-25) or D-M-YY (1-12-25)
+  match = dateStr.match(/^(\d{1,2})-(\d{1,2})-(\d{2})$/);
   if (match) {
     const day = parseInt(match[1]!);
     const month = parseInt(match[2]!);
     const year = parseInt(match[3]!) + 2000; // Assume 21st century
-    return { day, month, year, formatted: `${match[1]!}-${match[2]!}-${year}` };
+    return {
+      day,
+      month,
+      year,
+      formatted: `${match[1]!.padStart(2, "0")}-${match[2]!.padStart(2, "0")}-${year}`,
+    };
   }
 
-  // Format 3: DD.MM.YYYY (24.12.2025)
-  match = dateStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  // Format 3: DD.MM.YYYY (24.12.2025) or D.M.YYYY (1.12.2025)
+  match = dateStr.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
 
   if (match) {
     const day = parseInt(match[1]!);
@@ -358,18 +363,23 @@ function parseDateInput(
       day,
       month,
       year,
-      formatted: `${match[1]!}-${match[2]!}-${match[3]!}`,
+      formatted: `${match[1]!.padStart(2, "0")}-${match[2]!.padStart(2, "0")}-${match[3]!}`,
     };
   }
 
-  // Format 4: DD.MM.YY (24.12.25)
-  match = dateStr.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  // Format 4: DD.MM.YY (24.12.25) or D.M.YY (1.12.25)
+  match = dateStr.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2})$/);
 
   if (match) {
     const day = parseInt(match[1]!);
     const month = parseInt(match[2]!);
     const year = parseInt(match[3]!) + 2000; // Assume 21st century
-    return { day, month, year, formatted: `${match[1]!}-${match[2]!}-${year}` };
+    return {
+      day,
+      month,
+      year,
+      formatted: `${match[1]!.padStart(2, "0")}-${match[2]!.padStart(2, "0")}-${year}`,
+    };
   }
 
   // Format 5: DDMMYY (241225)
