@@ -1,0 +1,23 @@
+{
+  "name": "jeevesbot",
+  "version": "1.0.0",
+  "description": "Digital assistant for business management with calendar functionality",
+  "main": "backend/dist/index.js",
+  "scripts": {
+    "dev": "cd backend && npm run dev",
+    "build": "cd backend && npm run build",
+    "start": "cd backend && npm start",
+    "test": "cd backend && npm test"
+  },
+  "keywords": [
+    "digital-assistant",
+    "calendar",
+    "telegram-bot",
+    "business-management"
+  ],
+  "author": "JeevesBot Team",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.16.3"
+  }
+}
