@@ -31,7 +31,7 @@ describe("Calendar Service", () => {
       const input = "21-11-2025. 14:30. Peter van der Meer. Ghostin 06";
       const result = parseAppointmentInput(input);
 
-      expect(result).toEqual({
+      expect(result.appointment).toEqual({
         date: "21-11-2025",
         time: "14:30",
         contactName: "Peter van der Meer",
@@ -43,7 +43,7 @@ describe("Calendar Service", () => {
       const input = "21-11-2025.   14:30.   Peter van der Meer.   Ghostin 06";
       const result = parseAppointmentInput(input);
 
-      expect(result).toEqual({
+      expect(result.appointment).toEqual({
         date: "21-11-2025",
         time: "14:30",
         contactName: "Peter van der Meer",
@@ -54,43 +54,157 @@ describe("Calendar Service", () => {
     it("should return null for invalid date format", () => {
       const input = "21/11/2025. 14:30. Peter van der Meer. Ghostin 06";
       const result = parseAppointmentInput(input);
-      expect(result).toBeNull();
+      expect(result.appointment).toBeNull();
+    });
+
+    it("should support multiple date formats", () => {
+      // Test DD-MM-YYYY
+      let result = parseAppointmentInput(
+        "24-12-2025. 10:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test DD-MM-YY
+      result = parseAppointmentInput(
+        "24-12-25. 10:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test DD.MM.YYYY
+      result = parseAppointmentInput(
+        "24.12.2025. 10:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test DD.MM.YY
+      result = parseAppointmentInput(
+        "24.12.25. 10:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test DDMMYY
+      result = parseAppointmentInput(
+        "241225. 10:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test DDMMYYYY
+      result = parseAppointmentInput(
+        "24122025. 10:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+    });
+
+    it("should support multiple time formats", () => {
+      // Test HH:MM
+      let result = parseAppointmentInput(
+        "24-12-2025. 10:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test HH.MM
+      result = parseAppointmentInput(
+        "24-12-2025. 10.30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "10:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test single digit hours with colon
+      result = parseAppointmentInput(
+        "24-12-2025. 9:30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "09:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
+
+      // Test single digit hours with dot
+      result = parseAppointmentInput(
+        "24-12-2025. 9.30. Test Contact. Test Category",
+      );
+      expect(result.appointment).toEqual({
+        date: "24-12-2025",
+        time: "09:30",
+        contactName: "Test Contact",
+        category: "Test Category",
+      });
     });
 
     it("should return null for invalid time format", () => {
       const input = "21-11-2025. 14:30:00. Peter van der Meer. Ghostin 06";
       const result = parseAppointmentInput(input);
-      expect(result).toBeNull();
+      expect(result.appointment).toBeNull();
     });
 
     it("should return null for invalid date (non-existent date)", () => {
       const input = "31-02-2025. 14:30. Peter van der Meer. Ghostin 06";
       const result = parseAppointmentInput(input);
-      expect(result).toBeNull();
+      expect(result.appointment).toBeNull();
     });
 
     it("should return null for invalid time (hours out of range)", () => {
       const input = "21-11-2025. 25:30. Peter van der Meer. Ghostin 06";
       const result = parseAppointmentInput(input);
-      expect(result).toBeNull();
+      expect(result.appointment).toBeNull();
     });
 
     it("should return null for invalid time (minutes out of range)", () => {
       const input = "21-11-2025. 14:60. Peter van der Meer. Ghostin 06";
       const result = parseAppointmentInput(input);
-      expect(result).toBeNull();
+      expect(result.appointment).toBeNull();
     });
 
     it("should return null for insufficient parts", () => {
       const input = "21-11-2025. 14:30. Peter van der Meer";
       const result = parseAppointmentInput(input);
-      expect(result).toBeNull();
+      expect(result.appointment).toBeNull();
     });
 
     it("should return null for empty input", () => {
       const input = "";
       const result = parseAppointmentInput(input);
-      expect(result).toBeNull();
+      expect(result.appointment).toBeNull();
     });
   });
 

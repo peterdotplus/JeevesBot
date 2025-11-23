@@ -25,8 +25,10 @@ bot.command("help", async (ctx) => {
 Available commands:
 • /help - Display this help message
 • /addcal - Add an appointment to the calendar
-  Format: /addcal DD-MM-YYYY. HH:MM. Contact Name. Category
+  Format: /addcal DATE. TIME. Contact Name. Category
   Example: /addcal 21-11-2025. 14:30. Peter van der Meer. Ghostin 06
+  *Date formats:* 24-12-2025, 24-12-25, 24.12.2025, 24.12.25, 241225, 24122025
+  *Time formats:* 10:30, 10.30
 • /viewcal - Display all appointments
 • /7days - Display appointments for today and next 6 days
 
@@ -52,11 +54,12 @@ bot.command("addcal", async (ctx) => {
   }
 
   try {
-    const parsedAppointment = parseAppointmentInput(appointmentData);
+    const { appointment: parsedAppointment, error } =
+      parseAppointmentInput(appointmentData);
 
     if (!parsedAppointment) {
       await ctx.reply(
-        `❌ *Invalid format!*\n\n*Current Date: ${currentDate}*\n\nPlease use: DD-MM-YYYY. HH:MM. Contact Name. Category\nExample: /addcal 21-11-2025. 14:30. Peter van der Meer. Ghostin 06`,
+        `❌ *Invalid format!*\n\n*Current Date: ${currentDate}*\n\n${error}\n\nExample: /addcal 21-11-2025. 14:30. Peter van der Meer. Ghostin 06\n\nYour input: "${appointmentData}"`,
         { parse_mode: "Markdown" },
       );
       return;
