@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import { config } from "./config/config";
 import telegramRoutes from "./routes/telegram";
 import calendarRoutes from "./routes/calendar";
@@ -11,19 +10,36 @@ const app = express();
 const PORT = config.server.port;
 
 // Middleware
-app.use(
-  cors({
-    origin: [
+// Add CORS headers manually for all responses to ensure they're set
+app.use((req, res, next) => {
+  // Set CORS headers for all responses
+  const origin = req.headers.origin;
+  if (origin) {
+    const allowedOrigins = [
       "http://localhost:3000",
       "http://127.0.0.1:3000",
       "https://localhost:3000",
       config.server.frontendUrl || "",
-    ].filter((origin): origin is string => Boolean(origin)),
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
-  }),
-);
+    ].filter((o): o is string => Boolean(o));
+
+    if (allowedOrigins.includes(origin)) {
+      res.header("Access-Control-Allow-Origin", origin);
+    }
+  }
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Origin, Accept",
+  );
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
+  return next();
+});
 
 // CORS logging middleware for debugging
 app.use((req, res, next) => {
