@@ -145,4 +145,16 @@ export const getAppConfig = () => {
   return config.app;
 };
 
+// Build authenticated URL with username and password parameters
+export const buildAuthenticatedUrl = (
+  baseUrl: string,
+  path: string,
+): string => {
+  const auth = getAuthCredentials();
+  const url = new URL(path, baseUrl);
+  url.searchParams.set("username", auth.username);
+  url.searchParams.set("password", auth.password);
+  return url.toString();
+};
+
 export default getConfig;

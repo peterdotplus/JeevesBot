@@ -7,6 +7,30 @@ import { useRouter } from "next/navigation";
 // Mock the fetch API
 global.fetch = jest.fn();
 
+// Mock the config utility
+jest.mock("@/utils/config", () => ({
+  getConfig: jest.fn(() => ({
+    BACKEND_URL: "http://localhost:3001",
+    NEXT_PUBLIC_APP_NAME: "JeevesBot Calendar (Development)",
+    NODE_ENV: "development",
+    authentication: {
+      backendCredentials: {
+        username: "admin",
+        password: "password123",
+        note: "Test credentials",
+      },
+    },
+  })),
+  getAuthCredentials: jest.fn(() => ({
+    username: "admin",
+    password: "password123",
+    note: "Test credentials",
+  })),
+  buildAuthenticatedUrl: jest.fn((baseUrl: string, path: string) => {
+    return `${baseUrl}${path}?username=admin&password=password123`;
+  }),
+}));
+
 // Mock next/navigation
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -213,18 +237,21 @@ describe("Home Page", () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(mockFetch).toHaveBeenCalledWith("/api/appointments", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    expect(mockFetch).toHaveBeenCalledWith(
+      "http://localhost:3001/api/appointments?username=admin&password=password123",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: "21-11-2025",
+          time: "14:30",
+          contactName: "Test Contact",
+          category: "Test Category",
+        }),
       },
-      body: JSON.stringify({
-        date: "21-11-2025",
-        time: "14:30",
-        contactName: "Test Contact",
-        category: "Test Category",
-      }),
-    });
+    );
   });
 
   it("deletes appointment successfully", async () => {
@@ -255,9 +282,12 @@ describe("Home Page", () => {
     fireEvent.click(deleteButton);
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith("/api/appointments/1", {
-        method: "DELETE",
-      });
+      expect(mockFetch).toHaveBeenCalledWith(
+        "http://localhost:3001/api/appointments/1?username=admin&password=password123",
+        {
+          method: "DELETE",
+        },
+      );
     });
   });
 

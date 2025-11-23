@@ -4,6 +4,7 @@ import {
   getAuthCredentials,
   getApiEndpoints,
   getAppConfig,
+  buildAuthenticatedUrl,
 } from "@/utils/config";
 
 // Mock the config.json file
@@ -199,6 +200,52 @@ describe("Configuration Utility", () => {
       expect(auth.username).toBe("test-user");
       expect(auth.password).toBe("test-password");
       expect(auth.note).toBe("Test credentials");
+    });
+
+    describe("buildAuthenticatedUrl", () => {
+      it("should build URL with username and password parameters", () => {
+        const baseUrl = "http://localhost:3001";
+        const path = "/api/appointments";
+
+        const url = buildAuthenticatedUrl(baseUrl, path);
+
+        expect(url).toBe(
+          "http://localhost:3001/api/appointments?username=test-user&password=test-password",
+        );
+      });
+
+      it("should build URL with path parameters and existing query string", () => {
+        const baseUrl = "http://localhost:3001";
+        const path = "/api/appointments/123?filter=active";
+
+        const url = buildAuthenticatedUrl(baseUrl, path);
+
+        expect(url).toBe(
+          "http://localhost:3001/api/appointments/123?filter=active&username=test-user&password=test-password",
+        );
+      });
+
+      it("should build URL for production environment", () => {
+        const baseUrl = "https://api.example.com";
+        const path = "/api/appointments";
+
+        const url = buildAuthenticatedUrl(baseUrl, path);
+
+        expect(url).toBe(
+          "https://api.example.com/api/appointments?username=test-user&password=test-password",
+        );
+      });
+
+      it("should handle paths with trailing slash", () => {
+        const baseUrl = "http://localhost:3001";
+        const path = "/api/appointments/";
+
+        const url = buildAuthenticatedUrl(baseUrl, path);
+
+        expect(url).toBe(
+          "http://localhost:3001/api/appointments/?username=test-user&password=test-password",
+        );
+      });
     });
   });
 

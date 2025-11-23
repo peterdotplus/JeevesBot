@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { getConfig, getAuthCredentials } from "@/utils/config";
+import {
+  getConfig,
+  getAuthCredentials,
+  buildAuthenticatedUrl,
+} from "@/utils/config";
 
 // Dynamically import components to avoid SSR issues
 const Calendar = dynamic(() => import("@/components/Calendar"), {
@@ -61,12 +65,8 @@ export default function Home() {
         throw new Error("Backend configuration is missing");
       }
 
-      const response = await fetch(`${backendUrl}/api/appointments`, {
-        headers: {
-          Authorization:
-            "Basic " + btoa(`${backendUsername}:${backendPassword}`),
-        },
-      });
+      const url = buildAuthenticatedUrl(backendUrl, "/api/appointments");
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error("Failed to fetch appointments");
@@ -97,12 +97,11 @@ export default function Home() {
         throw new Error("Backend configuration is missing");
       }
 
-      const response = await fetch(`${backendUrl}/api/appointments`, {
+      const url = buildAuthenticatedUrl(backendUrl, "/api/appointments");
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            "Basic " + btoa(`${backendUsername}:${backendPassword}`),
         },
         body: JSON.stringify(appointmentData),
       });
@@ -135,12 +134,9 @@ export default function Home() {
         throw new Error("Backend configuration is missing");
       }
 
-      const response = await fetch(`${backendUrl}/api/appointments/${id}`, {
+      const url = buildAuthenticatedUrl(backendUrl, `/api/appointments/${id}`);
+      const response = await fetch(url, {
         method: "DELETE",
-        headers: {
-          Authorization:
-            "Basic " + btoa(`${backendUsername}:${backendPassword}`),
-        },
       });
 
       if (!response.ok) {

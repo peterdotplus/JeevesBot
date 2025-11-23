@@ -21,33 +21,34 @@ export function authenticate(
     return next();
   }
 
-  // Check for Authorization header
-  const authHeader = req.headers.authorization;
+  let username: string | undefined;
+  let password: string | undefined;
 
-  if (!authHeader || !authHeader.startsWith("Basic ")) {
-    return res.status(401).json({
-      success: false,
-      error: "Authentication required",
-    });
+  // Check for URL parameters first
+  if (req.query.username && req.query.password) {
+    username = req.query.username as string;
+    password = req.query.password as string;
   }
-
-  // Extract and decode credentials
-  const base64Credentials = authHeader.split(" ")[1];
-  if (!base64Credentials) {
-    return res.status(401).json({
-      success: false,
-      error: "Invalid authentication format",
-    });
+  // Fall back to Authorization header
+  else if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Basic ")
+  ) {
+    const authHeader = req.headers.authorization;
+    const base64Credentials = authHeader.split(" ")[1];
+    if (base64Credentials) {
+      const credentials = Buffer.from(base64Credentials, "base64").toString(
+        "ascii",
+      );
+      [username, password] = credentials.split(":");
+    }
   }
-  const credentials = Buffer.from(base64Credentials, "base64").toString(
-    "ascii",
-  );
-  const [username, password] = credentials.split(":");
 
   if (!username || !password) {
     return res.status(401).json({
       success: false,
-      error: "Invalid authentication format",
+      error:
+        "Authentication required. Provide username and password as URL parameters or Basic Auth header",
     });
   }
 
