@@ -1,15 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set client flag to avoid SSR issues
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isClient) return;
+
     setIsLoading(true);
     setError("");
 
@@ -19,15 +27,37 @@ export default function LoginPage() {
       // Store authentication state (in a real app, use proper session management)
       localStorage.setItem("authenticated", "true");
       localStorage.setItem("username", username);
-      if (typeof window !== "undefined") {
-        window.location.href = "/";
-      }
+      window.location.href = "/";
     } else {
       setError("Invalid username or password");
     }
 
     setIsLoading(false);
   };
+
+  // During static export, show loading state
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">
+              JeevesBot Calendar
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Your digital assistant for business management
+            </p>
+          </div>
+          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

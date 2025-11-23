@@ -1,9 +1,22 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
-import Calendar from "@/components/Calendar";
-import AddAppointmentForm from "@/components/AddAppointmentForm";
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+// Dynamically import components to avoid SSR issues
+const Calendar = dynamic(() => import("@/components/Calendar"), {
+  ssr: false,
+  loading: () => <div>Loading calendar...</div>,
+});
+
+const AddAppointmentForm = dynamic(
+  () => import("@/components/AddAppointmentForm"),
+  {
+    ssr: false,
+    loading: () => <div>Loading form...</div>,
+  },
+);
+
 import { Appointment } from "@/types/calendar";
 
 export default function Home() {
@@ -12,22 +25,29 @@ export default function Home() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  // Check authentication on component mount
+  // Set client flag to avoid SSR issues
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Check authentication on component mount (client-side only)
+  useEffect(() => {
+    if (!isClient) return;
+
     const authStatus = localStorage.getItem("authenticated");
     if (authStatus) {
       setIsAuthenticated(true);
       fetchAppointments();
     } else {
-      // For static export, redirect using window.location
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
+      window.location.href = "/login";
     }
-  }, []);
+  }, [isClient]);
 
   const fetchAppointments = async () => {
+    if (!isClient) return;
+
     try {
       setIsLoading(true);
       const backendUrl =
@@ -36,15 +56,18 @@ export default function Home() {
         process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
       const backendPassword =
         process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+
       const response = await fetch(`${backendUrl}/api/appointments`, {
         headers: {
           Authorization:
             "Basic " + btoa(`${backendUsername}:${backendPassword}`),
         },
       });
+
       if (!response.ok) {
         throw new Error("Failed to fetch appointments");
       }
+
       const data = await response.json();
       setAppointments(data.data?.appointments || []);
     } catch (err) {
@@ -54,12 +77,11 @@ export default function Home() {
     }
   };
 
-  // Remove the useEffect that calls fetchAppointments directly
-  // since we now handle it in the authentication check above
-
   const handleAddAppointment = async (
     appointmentData: Omit<Appointment, "id" | "createdAt">,
   ) => {
+    if (!isClient) return;
+
     try {
       const backendUrl =
         process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
@@ -67,6 +89,7 @@ export default function Home() {
         process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
       const backendPassword =
         process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+
       const response = await fetch(`${backendUrl}/api/appointments`, {
         method: "POST",
         headers: {
@@ -92,6 +115,8 @@ export default function Home() {
   };
 
   const handleDeleteAppointment = async (id: string) => {
+    if (!isClient) return;
+
     try {
       const backendUrl =
         process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
@@ -99,6 +124,7 @@ export default function Home() {
         process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
       const backendPassword =
         process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+
       const response = await fetch(`${backendUrl}/api/appointments/${id}`, {
         method: "DELETE",
         headers: {
@@ -118,6 +144,18 @@ export default function Home() {
       );
     }
   };
+
+  // During static export, show loading state
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading application...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated || isLoading) {
     return (
@@ -149,9 +187,7 @@ export default function Home() {
                 onClick={() => {
                   localStorage.removeItem("authenticated");
                   localStorage.removeItem("username");
-                  if (typeof window !== "undefined") {
-                    window.location.href = "/login";
-                  }
+                  window.location.href = "/login";
                 }}
                 className="btn-secondary flex items-center gap-2"
               >
