@@ -7,6 +7,7 @@ import {
   formatAppointment,
   formatAppointments,
   deleteAppointment,
+  deleteAppointmentById,
   getDayName,
   initializeCalendarData,
   Appointment,
@@ -629,6 +630,85 @@ describe("Calendar Service", () => {
       expect(result.success).toBe(false);
       expect(result.deletedAppointment).toBeUndefined();
       expect(result.error).toContain("Invalid appointment number");
+    });
+  });
+
+  describe("deleteAppointmentById", () => {
+    beforeEach(() => {
+      // Add some test appointments
+      addAppointment({
+        date: "21-11-2025",
+        time: "14:30",
+        contactName: "Peter van der Meer",
+        category: "Ghostin 06",
+      });
+
+      addAppointment({
+        date: "22-11-2025",
+        time: "10:00",
+        contactName: "John Doe",
+        category: "Meeting",
+      });
+
+      addAppointment({
+        date: "23-11-2025",
+        time: "09:00",
+        contactName: "Jane Smith",
+        category: "Call",
+      });
+    });
+
+    it("should delete appointment by valid ID", () => {
+      const initialAppointments = getAllAppointments();
+      expect(initialAppointments).toHaveLength(3);
+
+      const appointmentToDelete = initialAppointments[1]!; // John Doe
+      const result = deleteAppointmentById(appointmentToDelete.id);
+
+      expect(result.success).toBe(true);
+      expect(result.deletedAppointment?.id).toBe(appointmentToDelete.id);
+      expect(result.deletedAppointment?.contactName).toBe("John Doe");
+
+      const remainingAppointments = getAllAppointments();
+      expect(remainingAppointments).toHaveLength(2);
+      expect(
+        remainingAppointments.some(
+          (appt) => appt.id === appointmentToDelete.id,
+        ),
+      ).toBe(false);
+    });
+
+    it("should return error for invalid ID", () => {
+      const result = deleteAppointmentById("invalid-id");
+      expect(result.success).toBe(false);
+      expect(result.deletedAppointment).toBeUndefined();
+      expect(result.error).toContain("Appointment not found");
+    });
+
+    it("should handle deleting the first appointment by ID", () => {
+      const initialAppointments = getAllAppointments();
+      const firstAppointment = initialAppointments[0]!;
+
+      const result = deleteAppointmentById(firstAppointment.id);
+      expect(result.success).toBe(true);
+      expect(result.deletedAppointment?.id).toBe(firstAppointment.id);
+
+      const remainingAppointments = getAllAppointments();
+      expect(remainingAppointments).toHaveLength(2);
+      expect(remainingAppointments[0]?.contactName).toBe("John Doe");
+    });
+
+    it("should handle deleting the last appointment by ID", () => {
+      const initialAppointments = getAllAppointments();
+      const lastAppointment = initialAppointments[2]!;
+
+      const result = deleteAppointmentById(lastAppointment.id);
+      expect(result.success).toBe(true);
+      expect(result.deletedAppointment?.id).toBe(lastAppointment.id);
+
+      const remainingAppointments = getAllAppointments();
+      expect(remainingAppointments).toHaveLength(2);
+      expect(remainingAppointments[1]?.contactName).toBe("John Doe");
     });
   });
 

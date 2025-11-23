@@ -27,6 +27,52 @@ export function clearInMemoryData(): void {
 }
 
 /**
+ * Load calendar data from file
+ */
+export function loadCalendarData(): CalendarData {
+  // Use in-memory storage for tests
+  if (process.env.NODE_ENV === "test") {
+    if (!inMemoryData) {
+      inMemoryData = { appointments: [] };
+    }
+    return inMemoryData;
+  }
+
+  try {
+    const calendarFilePath = getCalendarFilePath();
+
+    if (!fs.existsSync(calendarFilePath)) {
+      return { appointments: [] };
+    }
+
+    const fileContent = fs.readFileSync(calendarFilePath, "utf-8");
+    return JSON.parse(fileContent) as CalendarData;
+  } catch (error) {
+    console.error("❌ Failed to load calendar data:", error);
+    return { appointments: [] };
+  }
+}
+
+/**
+ * Save calendar data to file
+ */
+export function saveCalendarData(data: CalendarData): void {
+  // Use in-memory storage for tests
+  if (process.env.NODE_ENV === "test") {
+    inMemoryData = data;
+    return;
+  }
+
+  try {
+    ensureDataDirectory();
+    const calendarFilePath = getCalendarFilePath();
+    fs.writeFileSync(calendarFilePath, JSON.stringify(data, null, 2), "utf-8");
+  } catch (error) {
+    console.error("❌ Failed to save calendar data:", error);
+  }
+}
+
+/**
  * Get the path to the calendar data file
  */
 function getCalendarFilePath(): string {
@@ -61,52 +107,6 @@ export function initializeCalendarData(): void {
       "utf-8",
     );
     console.log("✅ Calendar data file initialized");
-  }
-}
-
-/**
- * Load calendar data from file
- */
-function loadCalendarData(): CalendarData {
-  // Use in-memory storage for tests
-  if (process.env.NODE_ENV === "test") {
-    if (!inMemoryData) {
-      inMemoryData = { appointments: [] };
-    }
-    return inMemoryData;
-  }
-
-  try {
-    const calendarFilePath = getCalendarFilePath();
-
-    if (!fs.existsSync(calendarFilePath)) {
-      return { appointments: [] };
-    }
-
-    const fileContent = fs.readFileSync(calendarFilePath, "utf-8");
-    return JSON.parse(fileContent) as CalendarData;
-  } catch (error) {
-    console.error("❌ Failed to load calendar data:", error);
-    return { appointments: [] };
-  }
-}
-
-/**
- * Save calendar data to file
- */
-function saveCalendarData(data: CalendarData): void {
-  // Use in-memory storage for tests
-  if (process.env.NODE_ENV === "test") {
-    inMemoryData = data;
-    return;
-  }
-
-  try {
-    ensureDataDirectory();
-    const calendarFilePath = getCalendarFilePath();
-    fs.writeFileSync(calendarFilePath, JSON.stringify(data, null, 2), "utf-8");
-  } catch (error) {
-    console.error("❌ Failed to save calendar data:", error);
   }
 }
 
@@ -303,6 +303,37 @@ export function deleteAppointment(index: number): {
 
   // Remove the appointment at the specified index (1-based in display, 0-based in array)
   const deletedAppointment = data.appointments.splice(index - 1, 1)[0];
+  saveCalendarData(data);
+
+  return {
+    success: true,
+    deletedAppointment,
+  };
+}
+
+/**
+ * Delete an appointment by its ID
+ */
+export function deleteAppointmentById(id: string): {
+  success: boolean;
+  deletedAppointment?: Appointment;
+  error?: string;
+} {
+  const data = loadCalendarData();
+
+  const appointmentIndex = data.appointments.findIndex(
+    (appt) => appt.id === id,
+  );
+
+  if (appointmentIndex === -1) {
+    return {
+      success: false,
+      error: "Appointment not found",
+    };
+  }
+
+  // Remove the appointment by ID
+  const deletedAppointment = data.appointments.splice(appointmentIndex, 1)[0];
   saveCalendarData(data);
 
   return {

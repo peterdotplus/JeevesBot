@@ -3,6 +3,7 @@ import {
   getAllAppointments,
   addAppointment,
   deleteAppointment,
+  deleteAppointmentById,
   parseAppointmentInput,
   Appointment,
 } from "../services/calendarService";
@@ -136,8 +137,8 @@ router.delete("/:id", (req, res) => {
       });
     }
 
-    // Use the deleteAppointment function (note: it uses 1-based index for display)
-    const result = deleteAppointment(appointmentIndex + 1);
+    // Use the deleteAppointmentById function to delete by ID directly
+    const result = deleteAppointmentById(id);
 
     if (!result.success) {
       return res.status(400).json({
