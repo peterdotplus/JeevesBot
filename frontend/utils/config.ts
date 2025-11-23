@@ -79,7 +79,7 @@ export interface Config {
 
 export interface EnvironmentConfig {
   BACKEND_URL: string;
-  APP_NAME: string;
+  NEXT_PUBLIC_APP_NAME: string;
   NODE_ENV: string;
 }
 
@@ -112,7 +112,7 @@ export const getConfig = (): EnvironmentConfig & {
 
   return {
     BACKEND_URL: envConfig.BACKEND_URL,
-    APP_NAME: envConfig.APP_NAME,
+    NEXT_PUBLIC_APP_NAME: envConfig.NEXT_PUBLIC_APP_NAME,
     NODE_ENV: envConfig.NODE_ENV,
     authentication: config.authentication,
     app: config.app,

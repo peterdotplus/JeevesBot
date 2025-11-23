@@ -16,17 +16,17 @@ jest.mock(
     environment: {
       development: {
         BACKEND_URL: "http://localhost:3001",
-        APP_NAME: "JeevesBot Calendar (Development)",
+        NEXT_PUBLIC_APP_NAME: "JeevesBot Calendar (Development)",
         NODE_ENV: "development",
       },
       production: {
         BACKEND_URL: "https://api.example.com",
-        APP_NAME: "JeevesBot Calendar",
+        NEXT_PUBLIC_APP_NAME: "JeevesBot Calendar",
         NODE_ENV: "production",
       },
       staging: {
         BACKEND_URL: "https://staging.api.example.com",
-        APP_NAME: "JeevesBot Calendar (Staging)",
+        NEXT_PUBLIC_APP_NAME: "JeevesBot Calendar (Staging)",
         NODE_ENV: "production",
       },
     },
@@ -117,7 +117,9 @@ describe("Configuration Utility", () => {
 
       expect(config).toBeDefined();
       expect(config.BACKEND_URL).toBe("http://localhost:3001");
-      expect(config.APP_NAME).toBe("JeevesBot Calendar (Development)");
+      expect(config.NEXT_PUBLIC_APP_NAME).toBe(
+        "JeevesBot Calendar (Development)",
+      );
       expect(config.NODE_ENV).toBe("development");
       expect(config.authentication.backendCredentials.username).toBe(
         "test-user",
@@ -137,7 +139,7 @@ describe("Configuration Utility", () => {
       const config = getConfig();
 
       expect(config.BACKEND_URL).toBe("https://api.example.com");
-      expect(config.APP_NAME).toBe("JeevesBot Calendar");
+      expect(config.NEXT_PUBLIC_APP_NAME).toBe("JeevesBot Calendar");
       expect(config.NODE_ENV).toBe("production");
     });
 
@@ -152,7 +154,7 @@ describe("Configuration Utility", () => {
       const config = getConfig();
 
       expect(config.BACKEND_URL).toBe("https://staging.api.example.com");
-      expect(config.APP_NAME).toBe("JeevesBot Calendar (Staging)");
+      expect(config.NEXT_PUBLIC_APP_NAME).toBe("JeevesBot Calendar (Staging)");
       expect(config.NODE_ENV).toBe("production");
     });
   });
@@ -161,15 +163,19 @@ describe("Configuration Utility", () => {
     it("should return specific environment configuration", () => {
       const devConfig = getEnvironmentConfig("development");
       expect(devConfig.BACKEND_URL).toBe("http://localhost:3001");
-      expect(devConfig.APP_NAME).toBe("JeevesBot Calendar (Development)");
+      expect(devConfig.NEXT_PUBLIC_APP_NAME).toBe(
+        "JeevesBot Calendar (Development)",
+      );
 
       const prodConfig = getEnvironmentConfig("production");
       expect(prodConfig.BACKEND_URL).toBe("https://api.example.com");
-      expect(prodConfig.APP_NAME).toBe("JeevesBot Calendar");
+      expect(prodConfig.NEXT_PUBLIC_APP_NAME).toBe("JeevesBot Calendar");
 
       const stagingConfig = getEnvironmentConfig("staging");
       expect(stagingConfig.BACKEND_URL).toBe("https://staging.api.example.com");
-      expect(stagingConfig.APP_NAME).toBe("JeevesBot Calendar (Staging)");
+      expect(stagingConfig.NEXT_PUBLIC_APP_NAME).toBe(
+        "JeevesBot Calendar (Staging)",
+      );
     });
 
     it("should default to current environment when no parameter provided", () => {
