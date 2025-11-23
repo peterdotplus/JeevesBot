@@ -6,7 +6,7 @@ const config = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   transform: {
-    "^.+\\.(ts|tsx)$": "babel-jest",
+    "^.+\\.(ts|tsx)$": ["babel-jest", { configFile: "./babel.config.jest.js" }],
   },
   testMatch: ["**/__tests__/**/*.test.(ts|tsx)", "**/*.test.(ts|tsx)"],
   collectCoverageFrom: [

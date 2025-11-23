@@ -1,4 +1,4 @@
-import config from '../config.json';
+import config from "../config.json";
 
 export interface Config {
   name: string;
@@ -84,34 +84,36 @@ export interface EnvironmentConfig {
 }
 
 // Determine current environment
-const getCurrentEnvironment = (): 'development' | 'production' | 'staging' => {
-  if (typeof window !== 'undefined') {
+const getCurrentEnvironment = (): "development" | "production" | "staging" => {
+  if (typeof window !== "undefined") {
     // Client-side: check URL or other indicators
     const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'development';
-    } else if (hostname.includes('staging')) {
-      return 'staging';
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return "development";
+    } else if (hostname.includes("staging")) {
+      return "staging";
     } else {
-      return 'production';
+      return "production";
     }
   } else {
     // Server-side: use NODE_ENV or default to development
-    return process.env.NODE_ENV === 'production' ? 'production' : 'development';
+    return process.env.NODE_ENV === "production" ? "production" : "development";
   }
 };
 
 // Get configuration for current environment
 export const getConfig = (): EnvironmentConfig & {
-  authentication: Config['authentication'];
-  app: Config['app'];
-  api: Config['api'];
+  authentication: Config["authentication"];
+  app: Config["app"];
+  api: Config["api"];
 } => {
   const currentEnv = getCurrentEnvironment();
   const envConfig = config.environment[currentEnv];
 
   return {
-    ...envConfig,
+    BACKEND_URL: envConfig.BACKEND_URL,
+    APP_NAME: envConfig.APP_NAME,
+    NODE_ENV: envConfig.NODE_ENV,
     authentication: config.authentication,
     app: config.app,
     api: config.api,
@@ -119,7 +121,12 @@ export const getConfig = (): EnvironmentConfig & {
 };
 
 // Get specific environment configuration
-export const getEnvironmentConfig = (environment: 'development' | 'production' | 'staging' = getCurrentEnvironment()): EnvironmentConfig => {
+export const getEnvironmentConfig = (
+  environment:
+    | "development"
+    | "production"
+    | "staging" = getCurrentEnvironment(),
+): EnvironmentConfig => {
   return config.environment[environment];
 };
 
