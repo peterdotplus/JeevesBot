@@ -29,6 +29,10 @@ Use the number from the `/viewcal` output to delete an appointment:
 
 Current Date: 23-11-2025
 
+📅 22-11-2025 10:00
+👤 John Doe
+🏷️ Meeting
+
 Appointment #2 has been removed from your calendar.
 ```
 
@@ -86,7 +90,7 @@ Invalid appointment number. Please use a number between 1 and 3
 
 - **Number Matching**: Uses the exact same numbering as `/viewcal` command
 - **Error Prevention**: Validates numbers and provides clear error messages
-- **Immediate Feedback**: Shows success confirmation with current date
+- **Immediate Feedback**: Shows success confirmation with deleted appointment details and current date
 - **Data Persistence**: Changes are saved immediately to the calendar data file
 
 ## Best Practices

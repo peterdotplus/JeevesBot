@@ -173,7 +173,7 @@ bot.command("delcal", async (ctx) => {
   }
 
   try {
-    const { success, error } = deleteAppointment(number);
+    const { success, deletedAppointment, error } = deleteAppointment(number);
 
     if (!success) {
       await ctx.reply(
@@ -183,8 +183,16 @@ bot.command("delcal", async (ctx) => {
       return;
     }
 
+    if (!deletedAppointment) {
+      await ctx.reply(
+        `❌ *Error deleting appointment*\n\n*Current Date: ${currentDate}*\n\nNo appointment found to delete.`,
+        { parse_mode: "Markdown" },
+      );
+      return;
+    }
+
     await ctx.reply(
-      `🗑️ *Appointment deleted successfully!*\n\n*Current Date: ${currentDate}*\n\nAppointment #${number} has been removed from your calendar.`,
+      `🗑️ *Appointment deleted successfully!*\n\n*Current Date: ${currentDate}*\n\n📅 ${deletedAppointment.date} ${deletedAppointment.time}\n👤 ${deletedAppointment.contactName}\n🏷️ ${deletedAppointment.category}\n\nAppointment #${number} has been removed from your calendar.`,
       { parse_mode: "Markdown" },
     );
   } catch (error) {

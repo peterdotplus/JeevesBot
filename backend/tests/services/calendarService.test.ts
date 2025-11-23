@@ -395,6 +395,7 @@ describe("Calendar Service", () => {
 
       const result = deleteAppointment(2); // Delete the second appointment
       expect(result.success).toBe(true);
+      expect(result.deletedAppointment?.contactName).toBe("John Doe");
 
       const remainingAppointments = getAllAppointments();
       expect(remainingAppointments).toHaveLength(2);
@@ -405,18 +406,21 @@ describe("Calendar Service", () => {
     it("should return error for index less than 1", () => {
       const result = deleteAppointment(0);
       expect(result.success).toBe(false);
+      expect(result.deletedAppointment).toBeUndefined();
       expect(result.error).toContain("Invalid appointment number");
     });
 
     it("should return error for index greater than appointments length", () => {
       const result = deleteAppointment(5);
       expect(result.success).toBe(false);
+      expect(result.deletedAppointment).toBeUndefined();
       expect(result.error).toContain("Invalid appointment number");
     });
 
     it("should handle deleting the first appointment", () => {
       const result = deleteAppointment(1);
       expect(result.success).toBe(true);
+      expect(result.deletedAppointment?.contactName).toBe("Peter van der Meer");
 
       const remainingAppointments = getAllAppointments();
       expect(remainingAppointments).toHaveLength(2);
@@ -426,6 +430,7 @@ describe("Calendar Service", () => {
     it("should handle deleting the last appointment", () => {
       const result = deleteAppointment(3);
       expect(result.success).toBe(true);
+      expect(result.deletedAppointment?.contactName).toBe("Jane Smith");
 
       const remainingAppointments = getAllAppointments();
       expect(remainingAppointments).toHaveLength(2);
@@ -439,6 +444,7 @@ describe("Calendar Service", () => {
 
       const result = deleteAppointment(1);
       expect(result.success).toBe(false);
+      expect(result.deletedAppointment).toBeUndefined();
       expect(result.error).toContain("Invalid appointment number");
     });
   });

@@ -273,6 +273,7 @@ export function getAppointmentsForNext7Days(): Appointment[] {
  */
 export function deleteAppointment(index: number): {
   success: boolean;
+  deletedAppointment?: Appointment;
   error?: string;
 } {
   const data = loadCalendarData();
@@ -290,6 +291,7 @@ export function deleteAppointment(index: number): {
 
   return {
     success: true,
+    deletedAppointment,
   };
 }
 
