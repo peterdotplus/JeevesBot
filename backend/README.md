@@ -94,35 +94,30 @@ Edit `config.json` with your actual values:
 
 ### 3. Get Your Telegram Chat ID
 
-**Method 1: Using the Bot (Recommended)**
-1. Start your bot server: `npm run dev`
-2. Start a chat with your bot in Telegram
-3. Send the command: `/chatid`
-4. The bot will reply with your chat ID
-5. Add the chat ID to your configuration
-
-**Method 2: Using the Script**
+**Using the Script (Recommended)**
 1. Send any message to your bot
 2. Run: `node get-chat-id.js YOUR_BOT_TOKEN`
 3. The script will display your chat ID
+4. Add the chat ID to your configuration
 
 ### 4. Run the Application
 
-**Development mode (recommended for coding):**
+**Development mode (with polling - recommended for testing):**
 ```bash
 npm run dev
 ```
-- No build step required
+- Uses polling mode (no webhook setup needed)
 - Auto-restarts on file changes
 - Runs TypeScript directly
 
-**Production mode:**
+**Production mode (with webhook):**
 ```bash
 npm run build
 npm start
 ```
 - Build step compiles TypeScript to JavaScript
 - Better performance for production use
+- Requires webhook setup for Telegram
 
 ### 5. Testing
 
@@ -146,8 +141,7 @@ npm run test:coverage
 ### `/help`
 Display all available commands with current date.
 
-### `/chatid`
-Get your Telegram chat ID for configuration.
+
 
 ### `/addcal`
 Add an appointment to the calendar.
@@ -189,8 +183,28 @@ Debug endpoint to test bot functionality and configuration.
 1. Create a new bot with [@BotFather](https://t.me/botfather) on Telegram
 2. Get your bot token
 3. Start a chat with your bot
-4. Use `/chatid` command to get your chat ID
+4. Use the chat ID script to get your chat ID
 5. Add the bot token and chat ID to your configuration
+
+## Webhook Setup (Production)
+
+For production deployment, you need to set up a webhook:
+
+1. **Deploy your application** to a server with HTTPS
+2. **Set the webhook** using the Telegram API:
+   ```bash
+   curl -F "url=https://your-domain.com/telegram/webhook" \
+        https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook
+   ```
+3. **Verify webhook setup**:
+   ```bash
+   curl https://api.telegram.org/botYOUR_BOT_TOKEN/getWebhookInfo
+   ```
+
+Or use the built-in webhook setup endpoint:
+```bash
+curl -X POST http://localhost:3001/telegram/setup-webhook
+```
 
 ## Development Workflow
 

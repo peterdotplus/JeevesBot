@@ -38,7 +38,7 @@ cd backend && npm install
 1. Create a Telegram bot via [@BotFather](https://t.me/botfather)
 2. Copy `backend/config.example.json` to `backend/config.json`
 3. Add your bot token to the configuration
-4. Start the bot and use `/chatid` to get your chat ID
+4. Start the bot and use the chat ID script to get your chat ID
 5. Add the chat ID to your configuration
 
 ### 4. Running the Application
@@ -54,7 +54,7 @@ npm start
 ## Telegram Bot Commands
 
 - `/help` - Display all available commands
-- `/chatid` - Get your Telegram chat ID for configuration
+
 - `/addcal` - Add an appointment (format: DD-MM-YYYY. HH:MM. Contact Name. Category)
 - `/viewcal` - Display all appointments
 - `/7days` - Display appointments for next 7 days
@@ -63,6 +63,17 @@ npm start
 ```
 /addcal 21-11-2025. 14:30. Peter van der Meer. Ghostin 06
 ```
+
+## Getting Your Telegram Chat ID
+
+Use the provided script to get your chat ID:
+
+```bash
+cd backend
+node get-chat-id.js YOUR_BOT_TOKEN
+```
+
+This will display your chat ID which you need to add to your configuration.
 
 ## Project Structure
 
