@@ -16,9 +16,13 @@ export function authenticate(
   res: Response,
   next: NextFunction,
 ) {
-  // Skip authentication if disabled in config
-  if (!req.app.locals.config?.authentication?.enabled) {
-    return next();
+  // Check if authentication configuration exists
+  if (!req.app.locals.config?.authentication) {
+    console.error("❌ Authentication configuration missing");
+    return res.status(500).json({
+      success: false,
+      error: "Authentication configuration error",
+    });
   }
 
   let username: string | undefined;
@@ -54,6 +58,16 @@ export function authenticate(
 
   // Find user in config
   const users = req.app.locals.config.authentication.users;
+
+  // Check if users array exists and has entries
+  if (!users || !Array.isArray(users) || users.length === 0) {
+    console.error("❌ No users configured for authentication");
+    return res.status(500).json({
+      success: false,
+      error: "Authentication configuration error",
+    });
+  }
+
   const user = users.find(
     (u: any) => u.username === username && u.password === password,
   );
@@ -71,7 +85,7 @@ export function authenticate(
     role: user.role,
   };
 
-  next();
+  return next();
 }
 
 /**

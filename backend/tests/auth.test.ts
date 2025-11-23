@@ -5,7 +5,6 @@ import { authenticate, AuthenticatedRequest } from "../src/middleware/auth";
 // Mock config
 const mockConfig = {
   authentication: {
-    enabled: true,
     users: [
       {
         username: "admin",
@@ -168,33 +167,6 @@ describe("Authentication Middleware", () => {
         username: "user",
         role: "user",
       });
-    });
-  });
-
-  describe("Authentication Disabled", () => {
-    it("should skip authentication when disabled in config", async () => {
-      // Create app with authentication disabled
-      const disabledApp = express();
-      disabledApp.use(express.json());
-      disabledApp.locals.config = {
-        authentication: {
-          enabled: false,
-          users: [],
-        },
-      };
-      disabledApp.use(authenticate);
-      disabledApp.get("/test", (req: AuthenticatedRequest, res) => {
-        res.status(200).json({
-          success: true,
-          user: req.user,
-        });
-      });
-
-      const response = await request(disabledApp).get("/test");
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-      expect(response.body.user).toBeUndefined();
     });
   });
 });

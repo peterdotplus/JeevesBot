@@ -6,6 +6,16 @@
   "server": {
     "port": 3001,
     "environment": "production",
-    "webhookBaseUrl": "https://your-domain.com"
+    "webhookBaseUrl": "https://your-domain.com",
+    "frontendUrl": "https://your-frontend-domain.com"
+  },
+  "authentication": {
+    "users": [
+      {
+        "username": "admin",
+        "password": "secure-password-here",
+        "role": "admin"
+      }
+    ]
   }
 }
