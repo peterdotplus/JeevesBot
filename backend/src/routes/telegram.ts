@@ -1,6 +1,7 @@
 import express from "express";
 import { telegramBot } from "../services/telegramBotService";
 import { config } from "../config/config";
+import { sendDailyReminder } from "../services/dailyReminderService";
 
 const router = express.Router();
 
@@ -122,6 +123,42 @@ router.get("/debug", async (req, res) => {
       success: false,
       error: "Failed to get bot info",
       details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+// Endpoint to manually trigger daily reminder (for testing)
+router.post("/trigger-daily-reminder", async (req, res) => {
+  try {
+    await sendDailyReminder();
+
+    res.status(200).json({
+      success: true,
+      message: "Daily reminder triggered successfully",
+    });
+  } catch (error) {
+    console.error("Error triggering daily reminder:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to trigger daily reminder",
+    });
+  }
+});
+
+// Simple cron endpoint for external cron job
+router.get("/cron/daily-reminder", async (req, res) => {
+  try {
+    await sendDailyReminder();
+
+    res.status(200).json({
+      success: true,
+      message: "Daily reminder cron executed successfully",
+    });
+  } catch (error) {
+    console.error("Error in daily reminder cron:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to execute daily reminder cron",
     });
   }
 });

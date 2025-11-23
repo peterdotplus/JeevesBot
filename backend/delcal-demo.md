@@ -121,3 +121,34 @@ Invalid appointment number. Please use a number between 1 and 3
 - `/viewcal` - View all appointments with numbers
 - `/7days` - View appointments for the next week
 - `/today` - View appointments for today only
+- **Daily Reminder** - Automatic 9:00 AM notification with today's appointments
+
+## Daily Reminder Feature
+
+### Automatic Notifications
+- **Time**: 9:00 AM daily (Netherlands timezone)
+- **Trigger**: Only sends message if appointments exist for today
+- **Content**: Same format as `/today` command output
+- **Environment**: Only active in production with configured chat ID
+
+### Example Daily Reminder Output
+```
+📅 *Daily Reminder - Today's Appointments*
+
+*Current Date: 23-11-2025*
+
+1. Sunday 23-11-2025 10:00 - Morning Meeting (Business)
+2. Sunday 23-11-2025 14:30 - Afternoon Call (Personal)
+```
+
+### Manual Testing
+You can test the daily reminder manually using the API endpoint:
+```bash
+curl -X POST http://localhost:3001/telegram/trigger-daily-reminder
+```
+
+### Configuration Requirements
+- Server must be running in production environment
+- Telegram chat ID must be configured
+- Server timezone is set to Europe/Amsterdam
+- **Daily Reminder** - Automatic message at 9:00 AM showing today's appointments (only if appointments exist)
