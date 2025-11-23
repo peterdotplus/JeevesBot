@@ -24,6 +24,7 @@ bot.command("help", async (ctx) => {
 
 Available commands:
 • /help - Display this help message
+• /chatid - Get your Telegram chat ID for configuration
 • /addcal - Add an appointment to the calendar
   Format: /addcal DD-MM-YYYY. HH:MM. Contact Name. Category
   Example: /addcal 21-11-2025. 14:30. Peter van der Meer. Ghostin 06
@@ -33,6 +34,17 @@ Available commands:
 *Note:* Use dots (.) as separators between date, time, contact name, and category.`;
 
   await ctx.reply(helpText, { parse_mode: "Markdown" });
+});
+
+// Handle /chatid command
+bot.command("chatid", async (ctx) => {
+  const currentDate = new Date().toLocaleDateString("nl-NL");
+  const chatId = ctx.chat.id;
+
+  await ctx.reply(
+    `📱 *Your Chat ID*\n\n*Current Date: ${currentDate}*\n\nYour Chat ID is: \`${chatId}\`\n\nUse this ID in your configuration file.`,
+    { parse_mode: "Markdown" },
+  );
 });
 
 // Handle /addcal command

@@ -1,13 +1,14 @@
-# WeightBuddy Backend
+# JeevesBot Backend
 
-A weight loss motivation chatbot backend that sends daily inspiration and check-in messages via Telegram.
+A digital assistant for business management with calendar functionality through a Telegram interface.
 
 ## Features
 
-- **Daily Inspiration**: Sends motivational messages and check-ins via Telegram
-- **AI-Powered**: Uses DeepSeek AI to generate personalized messages
-- **Localhost Security**: `/send-inspiration` endpoint only accessible from localhost
-- **Test-Driven Development**: Comprehensive test suite with Jest
+- **Calendar Management**: Add, view, and manage appointments
+- **Telegram Integration**: All functionality accessible via Telegram bot
+- **7-Day View**: View appointments for today and the next 6 days
+- **Current Date Awareness**: All responses include the current date
+- **Data Persistence**: File-based storage for appointments and conversation memory
 
 ## Tech Stack
 
@@ -15,7 +16,6 @@ A weight loss motivation chatbot backend that sends daily inspiration and check-
 - **Language**: TypeScript
 - **Framework**: Express.js
 - **Testing**: Jest
-- **AI Integration**: DeepSeek API
 - **Messaging**: Telegram Bot API
 
 ## Project Structure
@@ -23,20 +23,22 @@ A weight loss motivation chatbot backend that sends daily inspiration and check-
 ```
 backend/
 ├── src/
+│   ├── config/
+│   │   └── config.ts              # Configuration management
 │   ├── middleware/
-│   │   └── localhostOnly.ts     # Localhost access restriction
+│   │   └── localhostOnly.ts       # Localhost access restriction
 │   ├── routes/
-│   │   └── inspiration.ts       # API routes
+│   │   └── telegram.ts            # Telegram webhook routes
 │   ├── services/
-│   │   ├── categoryService.ts   # Category selection logic
-│   │   ├── deepseekService.ts   # AI message generation
-│   │   ├── inspirationService.ts # Main orchestration service
-│   │   └── telegramService.ts   # Telegram message sending
-│   └── index.ts                 # Main server file
+│   │   ├── calendarService.ts     # Calendar appointment management
+│   │   ├── chatService.ts         # Chat message handling
+│   │   ├── conversationMemoryService.ts # Conversation history
+│   │   └── telegramBotService.ts  # Telegram bot commands
+│   └── index.ts                   # Main server file
 ├── tests/
-│   ├── routes/                  # API route tests
-│   ├── services/                # Service unit tests
-│   └── setup.ts                 # Test configuration
+│   ├── services/                  # Service unit tests
+│   └── setup.ts                   # Test configuration
+├── data/                          # Data storage (auto-created, gitignored)
 ├── package.json
 ├── tsconfig.json
 └── jest.config.js
@@ -47,7 +49,6 @@ backend/
 ### Prerequisites
 
 - Node.js (v16 or higher)
-- DeepSeek API account and API key
 - Telegram Bot Token and Chat ID
 
 ### 1. Install Dependencies
@@ -62,10 +63,6 @@ npm install
 Create a `.env` file in the project root with your actual values:
 
 ```env
-# DeepSeek API Configuration
-DEEPSEEK_API_KEY=your_deepseek_api_key_here
-DEEPSEEK_API_URL=https://api.deepseek.com/v1/chat/completions
-
 # Telegram Bot Configuration
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 TELEGRAM_CHAT_ID=your_telegram_chat_id_here
@@ -84,10 +81,6 @@ Edit `config.json` with your actual values:
 
 ```json
 {
-  "deepseek": {
-    "apiKey": "your_deepseek_api_key_here",
-    "apiUrl": "https://api.deepseek.com/v1/chat/completions"
-  },
   "telegram": {
     "botToken": "your_telegram_bot_token_here",
     "chatId": "your_telegram_chat_id_here"
@@ -99,7 +92,21 @@ Edit `config.json` with your actual values:
 }
 ```
 
-### 3. Run the Application
+### 3. Get Your Telegram Chat ID
+
+**Method 1: Using the Bot (Recommended)**
+1. Start your bot server: `npm run dev`
+2. Start a chat with your bot in Telegram
+3. Send the command: `/chatid`
+4. The bot will reply with your chat ID
+5. Add the chat ID to your configuration
+
+**Method 2: Using the Script**
+1. Send any message to your bot
+2. Run: `node get-chat-id.js YOUR_BOT_TOKEN`
+3. The script will display your chat ID
+
+### 4. Run the Application
 
 **Development mode (recommended for coding):**
 ```bash
@@ -117,7 +124,7 @@ npm start
 - Build step compiles TypeScript to JavaScript
 - Better performance for production use
 
-### 4. Testing
+### 5. Testing
 
 Run the test suite:
 ```bash
@@ -134,63 +141,56 @@ Generate test coverage:
 npm run test:coverage
 ```
 
+## Telegram Bot Commands
+
+### `/help`
+Display all available commands with current date.
+
+### `/chatid`
+Get your Telegram chat ID for configuration.
+
+### `/addcal`
+Add an appointment to the calendar.
+
+**Format:** `/addcal DD-MM-YYYY. HH:MM. Contact Name. Category`
+
+**Example:** `/addcal 21-11-2025. 14:30. Peter van der Meer. Ghostin 06`
+
+**Note:** Use dots (.) as separators between date, time, contact name, and category.
+
+### `/viewcal`
+Display all appointments in a list format.
+
+### `/7days`
+Display all appointments for today and the next 6 days.
+
 ## API Endpoints
 
-### POST `/automation/send-inspiration`
-
-Sends a daily inspiration message via Telegram. Only accessible from localhost.
-
-**Headers:**
-- `X-Forwarded-For: 127.0.0.1` (or any localhost IP)
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "category": "Motivation",
-    "message": "You are doing great! Keep pushing forward!"
-  }
-}
-```
-
 ### GET `/health`
-
 Health check endpoint to verify the API is running.
 
 **Response:**
 ```json
 {
   "success": true,
-  "message": "WeightBuddy API is running",
+  "message": "JeevesBot API is running",
   "timestamp": "2024-01-01T12:00:00.000Z"
 }
 ```
+
+### POST `/telegram/webhook`
+Webhook endpoint for receiving Telegram updates (used in production).
+
+### GET `/telegram/debug`
+Debug endpoint to test bot functionality and configuration.
 
 ## Setting Up Telegram Bot
 
 1. Create a new bot with [@BotFather](https://t.me/botfather) on Telegram
 2. Get your bot token
 3. Start a chat with your bot
-4. Get your chat ID by sending a message to the bot and checking the response
-
-## Setting Up DeepSeek API
-
-1. Sign up for a DeepSeek account at [deepseek.com](https://www.deepseek.com)
-2. Generate an API key from your dashboard
-3. Add the API key to your `.env` file
-
-## Cron Job Setup
-
-To send daily messages automatically, set up a cron job that calls the `/send-inspiration` endpoint:
-
-```bash
-# Example cron job (runs daily at 9 AM)
-# Make sure the server is running first!
-0 9 * * * curl -X POST http://localhost:3001/automation/send-inspiration
-```
-
-**Important**: The server must be running (`npm run dev` or `npm start`) for the cron job to work.
+4. Use `/chatid` command to get your chat ID
+5. Add the bot token and chat ID to your configuration
 
 ## Development Workflow
 
@@ -207,6 +207,14 @@ npm run dev          # Start development server (no build needed)
 npm test             # Run tests anytime
 ```
 
+## Data Storage
+
+- **Calendar Data**: Stored in `data/calendar-data.json` (auto-created)
+- **Conversation Memory**: Stored in `data/conversation-memory.json` (auto-created)
+- **Git Ignored**: Both data files are excluded from version control
+
+The system automatically creates data files with proper structure when they don't exist.
+
 ## Configuration
 
 The application supports multiple configuration methods (in order of priority):
@@ -219,8 +227,6 @@ The application supports multiple configuration methods (in order of priority):
 
 | Setting | Description | Required | Environment Variable | Config File Path |
 |---------|-------------|----------|---------------------|------------------|
-| DeepSeek API Key | DeepSeek API authentication key | Yes | `DEEPSEEK_API_KEY` | `deepseek.apiKey` |
-| DeepSeek API URL | DeepSeek API endpoint URL | No | `DEEPSEEK_API_URL` | `deepseek.apiUrl` |
 | Telegram Bot Token | Telegram bot token | Yes | `TELEGRAM_BOT_TOKEN` | `telegram.botToken` |
 | Telegram Chat ID | Target chat ID for messages | Yes | `TELEGRAM_CHAT_ID` | `telegram.chatId` |
 | Server Port | Server port | No | `PORT` | `server.port` |
@@ -238,9 +244,8 @@ The API provides consistent error responses:
 ```
 
 Common error scenarios:
-- Missing API keys
-- Invalid Telegram configuration
-- AI service failures
+- Missing Telegram configuration
+- Invalid appointment format
 - Network connectivity issues
 
 ## Contributing
