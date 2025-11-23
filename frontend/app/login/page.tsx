@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { getAuthCredentials } from "@/utils/config";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -21,9 +22,18 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    // For now, we'll use hardcoded credentials matching the backend config
-    // In a real app, you'd want to make this configurable or use environment variables
-    if (username === "admin" && password === "password123") {
+    // Use configuration file for authentication
+    const auth = getAuthCredentials();
+    const backendUsername = auth.username;
+    const backendPassword = auth.password;
+
+    if (!backendUsername || !backendPassword) {
+      setError("Authentication configuration is missing");
+      setIsLoading(false);
+      return;
+    }
+
+    if (username === backendUsername && password === backendPassword) {
       // Store authentication state (in a real app, use proper session management)
       localStorage.setItem("authenticated", "true");
       localStorage.setItem("username", username);
@@ -166,10 +176,16 @@ export default function LoginPage() {
 
             <div className="mt-4 text-center text-sm text-gray-600">
               <p>
-                Username: <span className="font-mono">admin</span>
+                Username:{" "}
+                <span className="font-mono">
+                  {getAuthCredentials().username}
+                </span>
               </p>
               <p>
-                Password: <span className="font-mono">password123</span>
+                Password:{" "}
+                <span className="font-mono">
+                  {"*".repeat(getAuthCredentials().password.length)}
+                </span>
               </p>
             </div>
           </div>

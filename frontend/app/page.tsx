@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { getConfig, getAuthCredentials } from "@/utils/config";
 
 // Dynamically import components to avoid SSR issues
 const Calendar = dynamic(() => import("@/components/Calendar"), {
@@ -50,12 +51,15 @@ export default function Home() {
 
     try {
       setIsLoading(true);
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
-      const backendUsername =
-        process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
-      const backendPassword =
-        process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+      const config = getConfig();
+      const auth = getAuthCredentials();
+      const backendUrl = config.BACKEND_URL;
+      const backendUsername = auth.username;
+      const backendPassword = auth.password;
+
+      if (!backendUrl || !backendUsername || !backendPassword) {
+        throw new Error("Backend configuration is missing");
+      }
 
       const response = await fetch(`${backendUrl}/api/appointments`, {
         headers: {
@@ -83,12 +87,15 @@ export default function Home() {
     if (!isClient) return;
 
     try {
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
-      const backendUsername =
-        process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
-      const backendPassword =
-        process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+      const config = getConfig();
+      const auth = getAuthCredentials();
+      const backendUrl = config.BACKEND_URL;
+      const backendUsername = auth.username;
+      const backendPassword = auth.password;
+
+      if (!backendUrl || !backendUsername || !backendPassword) {
+        throw new Error("Backend configuration is missing");
+      }
 
       const response = await fetch(`${backendUrl}/api/appointments`, {
         method: "POST",
@@ -118,12 +125,15 @@ export default function Home() {
     if (!isClient) return;
 
     try {
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
-      const backendUsername =
-        process.env.NEXT_PUBLIC_BACKEND_USERNAME || "admin";
-      const backendPassword =
-        process.env.NEXT_PUBLIC_BACKEND_PASSWORD || "password123";
+      const config = getConfig();
+      const auth = getAuthCredentials();
+      const backendUrl = config.BACKEND_URL;
+      const backendUsername = auth.username;
+      const backendPassword = auth.password;
+
+      if (!backendUrl || !backendUsername || !backendPassword) {
+        throw new Error("Backend configuration is missing");
+      }
 
       const response = await fetch(`${backendUrl}/api/appointments/${id}`, {
         method: "DELETE",

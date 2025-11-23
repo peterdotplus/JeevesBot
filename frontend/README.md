@@ -29,6 +29,20 @@ A modern, responsive Progressive Web App (PWA) frontend for the JeevesBot calend
 - npm or yarn
 - Backend server running (see backend README)
 
+### Configuration
+
+1. **Copy the example configuration:**
+   ```bash
+   cp config.example.json config.json
+   ```
+
+2. **Update `config.json` with your settings:**
+   - Update `BACKEND_URL` in the production environment
+   - Update `authentication.backendCredentials` to match your backend
+   - The application automatically detects environment based on hostname
+
+**Note**: `config.json` is excluded from Git to protect sensitive credentials.
+
 ### Installation
 
 1. **Clone the repository**

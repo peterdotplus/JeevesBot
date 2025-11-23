@@ -2,6 +2,7 @@
   "name": "JeevesBot Frontend Configuration",
   "description": "Example configuration file for the JeevesBot frontend application",
   "version": "1.0.0",
+  "instructions": "Copy this file to config.json and update with your actual values",
 
   "environment": {
     "development": {
@@ -100,12 +101,10 @@
 
   "notes": [
     "This is an example configuration file. Copy this to config.json and modify as needed.",
-    "For environment variables, create a .env.local file in the frontend root directory.",
-    "Required environment variables:",
-    "  - BACKEND_URL: URL of the backend API server",
-    "  - NEXT_PUBLIC_APP_NAME: Public name of the application",
-    "Example .env.local content:",
-    "  BACKEND_URL=http://localhost:3001",
-    "  NEXT_PUBLIC_APP_NAME=JeevesBot Calendar"
+    "The config.json file is excluded from Git in .gitignore to protect sensitive credentials.",
+    "Required configuration updates:",
+    "  - Update production BACKEND_URL to your actual backend domain",
+    "  - Update authentication.backendCredentials to match your backend config.json",
+    "  - Ensure credentials are secure and not committed to version control"
   ]
 }

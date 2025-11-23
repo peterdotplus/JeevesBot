@@ -1,9 +1,11 @@
 import "./globals.css";
+import { getConfig } from "@/utils/config";
+
+const config = getConfig();
 
 export const metadata = {
-  title: "JeevesBot Calendar",
-  description:
-    "Digital assistant for business management with calendar functionality",
+  title: config.app.name,
+  description: config.app.description,
 };
 
 export default function RootLayout({

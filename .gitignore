@@ -87,6 +87,9 @@ web_modules/
 .next
 out
 
+# Frontend configuration file (contains sensitive credentials)
+frontend/config.json
+
 # Nuxt.js build / generate output
 .nuxt
 dist

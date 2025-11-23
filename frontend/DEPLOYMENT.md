@@ -10,52 +10,65 @@ This guide covers how to deploy the JeevesBot frontend to production environment
 - Backend API server running
 - Web server (Apache, Nginx, etc.)
 
-## 🔧 Environment Configuration
+## 🔧 Configuration
 
-### 1. Production Environment Variables
+### 1. Configuration File Setup
 
-Create or update `.env.production` file:
+The application uses `config.json` for all configuration settings. Update the `config.json` file with your production values:
 
-```env
-# Production Environment Configuration
-NEXT_PUBLIC_BACKEND_URL=https://api.yourdomain.com
-NEXT_PUBLIC_APP_NAME=JeevesBot Calendar
-NEXT_PUBLIC_BACKEND_USERNAME=admin
-NEXT_PUBLIC_BACKEND_PASSWORD=your-production-password
-NODE_ENV=production
+**Important**: The `frontend/config.json` file is excluded from version control in `.gitignore` to protect sensitive credentials.
+
+```json
+{
+  "environment": {
+    "production": {
+      "BACKEND_URL": "https://api.yourdomain.com",
+      "APP_NAME": "JeevesBot Calendar",
+      "NODE_ENV": "production"
+    }
+  },
+  "authentication": {
+    "backendCredentials": {
+      "username": "admin",
+      "password": "your-secure-production-password"
+    }
+  }
+}
 ```
-
-**Important**: Replace placeholder values with your actual production configuration.
 
 ### 2. Verify Backend Configuration
 
-Ensure your backend `config.json` matches the frontend credentials:
+Ensure your backend `config.json` matches the frontend credentials exactly:
 
 ```json
 {
   "auth": {
     "username": "admin",
-    "password": "your-production-password"
+    "password": "your-secure-production-password"
   }
 }
 ```
 
+**Critical**: The username and password in the backend config must match exactly what you set in the frontend `config.json`.
+
+### 3. Environment Detection
+
+The application automatically detects the environment based on:
+- **Development**: `localhost` or `127.0.0.1`
+- **Staging**: Hostname contains "staging"
+- **Production**: All other hostnames
+
 ## 🏗️ Build Process
 
-### Option 1: Standard Production Build
-```bash
-npm run build:prod
-```
-
-### Option 2: Development Build (for testing)
-```bash
-npm run build:dev
-```
-
-### Option 3: Default Build (uses current environment)
+### Standard Build
 ```bash
 npm run build
 ```
+
+The build process:
+- Uses configuration from `config.json`
+- Automatically detects environment based on deployment URL
+- Generates static files in the `out/` folder
 
 ## 📦 Deployment Methods
 
@@ -63,7 +76,7 @@ npm run build
 
 1. **Build the application:**
    ```bash
-   npm run build:prod
+   npm run build
    ```
 
 2. **Deploy static files:**
@@ -94,8 +107,8 @@ npm run build
 
 2. **Start with PM2:**
    ```bash
-   npm run build:prod
-   pm2 start npm --name "jeevesbot-frontend" -- start:prod
+   npm run build
+   pm2 start npm --name "jeevesbot-frontend" -- start
    ```
 
 3. **Save PM2 configuration:**
@@ -113,9 +126,9 @@ npm run build
    COPY package*.json ./
    RUN npm ci --only=production
    COPY . .
-   RUN npm run build:prod
+   RUN npm run build
    EXPOSE 3000
-   CMD ["npm", "start:prod"]
+   CMD ["npm", "start"]
    ```
 
 2. **Build and run:**
@@ -126,10 +139,12 @@ npm run build
 
 ## 🔒 Security Considerations
 
-### 1. Environment Variables
-- Never commit `.env.production` to version control
+### 1. Configuration Security
+- Never commit sensitive passwords to version control
+- **The `frontend/config.json` file is automatically excluded from Git in `.gitignore`**
 - Use secure passwords in production
-- Consider using environment variable management in your deployment platform
+- Consider using different config files for different environments
+- **Important**: Configuration is embedded at build time and cannot be changed without rebuilding
 
 ### 2. Backend Security
 - Ensure backend API has proper CORS configuration
@@ -162,22 +177,29 @@ npm run build
 ### Common Issues:
 
 1. **API Connection Errors**
-   - Verify `NEXT_PUBLIC_BACKEND_URL` is correct
+   - Verify `BACKEND_URL` in `config.json` is correct
    - Check backend server is running
    - Verify CORS configuration
 
 2. **Authentication Failures**
-   - Ensure frontend and backend credentials match
-   - Check password encoding/decoding
+   - Ensure frontend and backend credentials match exactly
+   - Verify `config.json` credentials match backend `config.json`
+   - Check that environment detection is working correctly
+   - Rebuild if credentials were changed
 
 3. **Static Export Issues**
    - Clear `.next` and `out` folders
-   - Run `npm run build:prod` again
+   - Run `npm run build` again
    - Check for client-side only code
 
 4. **Routing Problems**
    - Configure URL rewriting properly
    - Ensure all routes have corresponding HTML files
+
+5. **Configuration Issues**
+   - Verify `config.json` syntax is valid JSON
+   - Check that all required fields are present
+   - Ensure environment detection logic matches your deployment
 
 ## 📞 Support
 
@@ -186,10 +208,11 @@ For deployment issues:
 2. Verify backend API is accessible
 3. Review Next.js build logs
 4. Check server error logs
+5. Verify configuration file syntax
 
 ## 🎯 Best Practices
 
-- Use environment-specific configurations
+- Use different configuration sections for different environments
 - Implement proper error boundaries
 - Set up monitoring and alerting
 - Regular security audits
@@ -198,7 +221,13 @@ For deployment issues:
 ---
 
 **Next Steps:**
-1. Update `.env.production` with your actual values
-2. Run `npm run build:prod`
-3. Deploy the `out/` folder to your web server
-4. Test all functionality in production
+1. Update `config.json` with your actual production values
+2. Ensure backend `config.json` matches the frontend credentials
+3. Run `npm run build`
+4. Deploy the `out/` folder to your web server
+5. Test authentication and API functionality in production
+
+**Important Notes**:
+- `frontend/config.json` is excluded from Git to protect credentials
+- If you change credentials or configuration, you must rebuild and redeploy the application
+- Keep your production `config.json` file secure and backed up separately
